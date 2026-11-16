@@ -23,6 +23,7 @@ pnpm test
 pnpm typecheck
 pnpm --filter @corkboard/web exec playwright install chromium   # once
 pnpm --filter @corkboard/web e2e                                # browser tests against a real server
+pnpm --filter @corkboard/desktop smoke                          # the desktop app, after a web build
 ```
 
 Read [docs/architecture.md](docs/architecture.md) and
@@ -45,7 +46,8 @@ apply to people and to coding agents alike. The ones that matter most:
 
 - One concern per pull request. A rename or a move goes in its own.
 - `pnpm typecheck` and `pnpm test` pass, and the browser tests pass for a
-  change to `web`, `sync` or `server`.
+  change to `web`, `sync` or `server`. The desktop smoke run passes for a
+  change to `desktop` or to the web client's bridge.
 - Update `docs/trello-parity.md` in the same change that builds or drops a
   feature.
 

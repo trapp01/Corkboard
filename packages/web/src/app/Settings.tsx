@@ -1,10 +1,17 @@
-/** Settings: your name (the actor on your changes), the theme, and the server this browser syncs with. */
+/**
+ * Settings: your name (the actor on your changes), the theme, and the server
+ * this browser syncs with. In the desktop app the window always syncs with the
+ * app's own server, so its place is taken by the app's links to other servers
+ * and the sync details.
+ */
 import { useEffect, useState, type FormEvent } from 'react';
-import { fetchServerInfo } from '@corkboard/sync';
+import { fetchServerInfo, type SyncStatus } from '@corkboard/sync';
 import { Dialog } from './controls.js';
 import { NameField, ServerForm } from './FirstRun.js';
 import { useServices, type ThemeChoice } from './services.js';
 import { useStore } from './store.js';
+import { AppServerSettings } from '../desktop/AppServerSettings.js';
+import { shell } from '../shell-bridge.js';
 import { SyncDetails } from '../sync-ui/SyncStatusControl.js';
 import { useSyncStatus } from '../sync-ui/use-sync-status.js';
 
@@ -20,8 +27,6 @@ export function Settings({ onClose }: { onClose: () => void }) {
   const currentTheme = useStore(theme);
   const [name, setName] = useState(actor.get());
   const [saved, setSaved] = useState(false);
-  const [editingServer, setEditingServer] = useState(false);
-  const version = useServerVersion(status.server);
 
   const saveName = (event: FormEvent) => {
     event.preventDefault();
@@ -58,29 +63,48 @@ export function Settings({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </fieldset>
-      <section className="settings-section">
-        <h3>Server</h3>
-        {editingServer ? (
-          <ServerForm
-            initialAddress={status.server ?? ''}
-            fixedAddress={status.server ?? undefined}
-            submitLabel="Save token"
-            onDone={() => setEditingServer(false)}
-            onCancel={() => setEditingServer(false)}
-          />
-        ) : (
-          <>
+      {shell() ? (
+        <>
+          <AppServerSettings />
+          <section className="settings-section">
+            <h3>Details</h3>
             <SyncDetails status={status} />
-            {version && <p className="muted small">Corkboard server {version}</p>}
-            <div className="form-actions start">
-              <button type="button" className="button" onClick={() => setEditingServer(true)}>
-                Change access token
-              </button>
-            </div>
-          </>
-        )}
-      </section>
+          </section>
+        </>
+      ) : (
+        <ServerSection status={status} />
+      )}
     </Dialog>
+  );
+}
+
+/** The server this browser syncs with: the sync details, its version, and a new access token. */
+function ServerSection({ status }: { status: SyncStatus }) {
+  const [editing, setEditing] = useState(false);
+  const version = useServerVersion(status.server);
+  return (
+    <section className="settings-section">
+      <h3>Server</h3>
+      {editing ? (
+        <ServerForm
+          initialAddress={status.server ?? ''}
+          fixedAddress={status.server ?? undefined}
+          submitLabel="Save token"
+          onDone={() => setEditing(false)}
+          onCancel={() => setEditing(false)}
+        />
+      ) : (
+        <>
+          <SyncDetails status={status} />
+          {version && <p className="muted small">Corkboard server {version}</p>}
+          <div className="form-actions start">
+            <button type="button" className="button" onClick={() => setEditing(true)}>
+              Change access token
+            </button>
+          </div>
+        </>
+      )}
+    </section>
   );
 }
 

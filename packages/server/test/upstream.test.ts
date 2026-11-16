@@ -117,4 +117,11 @@ describe('a server with an upstream', () => {
     await waitFor(() => home.current.store.hasBlob(fromLaptop), 'the laptop blob on the homelab server', 15_000);
     await waitFor(() => laptop.current.store.hasBlob(fromHome), 'the homelab blob on the laptop', 15_000);
   });
+
+  it('stops and says so when the upstream refuses the token', async () => {
+    const home = await TestServer.start();
+    const laptop = await TestServer.start({ upstream: { url: home.url, token: 'not-the-token' }, upstreamRetryMs: RETRY });
+    await waitFor(() => laptop.current.upstream!.tokenRefused, 'the homelab server to refuse the token');
+    expect(laptop.current.upstream!.connected).toBe(false);
+  });
 });

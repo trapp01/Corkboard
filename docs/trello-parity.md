@@ -96,6 +96,7 @@ is in the notes where it differs.
 | Self-hosted, one container | built | |
 | Offline editing with merge on reconnect | built | |
 | A server following an upstream server | built | |
+| Desktop app with its own server, so agents on the same computer work from the boards | built | macOS, Windows, Linux; built from a checkout, unsigned. See [packages/desktop/README.md](../packages/desktop/README.md). |
 | Links to Looseleaf pages with the page text on the card | built | Needs the server connected to Looseleaf. |
 | Live flash on a card another device or an agent changed | built | |
 | Automation (Butler), Power-Ups | not planned | Agents over MCP cover the same ground. |

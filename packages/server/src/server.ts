@@ -28,6 +28,8 @@ export interface ServerOptions {
   dataDir: string;
   /** 0 picks a free port. */
   port: number;
+  /** The interface to listen on, such as `127.0.0.1` for this computer only. Every interface when left out. */
+  host?: string;
   /** When unset, the token is read from or generated into data/token. */
   token?: string;
   /** The built web client's folder; ignored unless it holds an index.html. */
@@ -64,6 +66,7 @@ export interface RunningServer {
 }
 
 export const SERVER_VERSION: string = packageJson.version;
+export { portAnswers } from './port.js';
 
 export async function startServer(options: ServerOptions): Promise<RunningServer> {
   const store = new DiskStore(options.dataDir);
@@ -104,7 +107,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
 
   await new Promise<void>((resolve, reject) => {
     http.once('error', reject);
-    http.listen(options.port, () => {
+    http.listen(options.port, options.host, () => {
       http.off('error', reject);
       resolve();
     });
@@ -131,7 +134,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
 
   return {
     port: address.port,
-    url: `http://127.0.0.1:${address.port}`,
+    url: `http://${urlHost(options.host)}:${address.port}`,
     token: access.token,
     tokenGenerated: access.generated,
     tokenSource: access.source,
@@ -142,6 +145,12 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     upstream,
     close,
   };
+}
+
+/** The host in `RunningServer.url`: the one listened on, or 127.0.0.1 when that is every interface. */
+function urlHost(host: string | undefined): string {
+  if (host === undefined || host === '' || host === '0.0.0.0' || host === '::') return '127.0.0.1';
+  return host.includes(':') ? `[${host}]` : host;
 }
 
 async function usableWebDir(webDir: string | null): Promise<string | null> {

@@ -23,6 +23,7 @@ The bundle needs only Node 22; copy `dist/server.js` anywhere and run it.
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `CORKBOARD_PORT` | `8422` | Port for HTTP and the sync WebSocket. |
+| `CORKBOARD_HOST` | unset | The interface to listen on. Unset listens on every interface; `127.0.0.1` keeps the server reachable from this computer only, as the desktop app does. |
 | `CORKBOARD_DATA` | `./data` | The data folder (layout below). |
 | `CORKBOARD_TOKEN` | unset | The access token. When unset, the server reads `data/token`, or generates a token, writes it there with mode 0600 and prints it once. |
 | `CORKBOARD_WEB_DIR` | unset | Folder of the built web client. When unset, the server uses `web/` beside `server.js`, or `packages/web/dist` in a checkout. A folder with no `index.html` is ignored, and the server then answers every non-API path with a one-line notice. |

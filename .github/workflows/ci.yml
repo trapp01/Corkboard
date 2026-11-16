@@ -12,6 +12,10 @@ concurrency:
 permissions:
   contents: read
 
+# The desktop package's unit tests and typecheck need Electron's types, not its binary; packaging is not run here.
+env:
+  ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+
 jobs:
   test:
     name: Typecheck and unit tests

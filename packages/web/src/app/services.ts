@@ -2,13 +2,16 @@
  * The app's long-lived objects, created once per session over one sync
  * client. Components get them through `useServices()`; nothing else holds
  * global state. The actor and theme are per-device settings kept in
- * localStorage and saved whenever they change.
+ * localStorage and saved whenever they change. In the desktop app,
+ * `appServer` follows the state of the server the app runs.
  */
 import { createContext, useContext } from 'react';
 import type * as Y from 'yjs';
 import { WORKSPACE_DOC_ID } from '@corkboard/model';
 import type { SyncClient } from '@corkboard/sync';
 import { BlobUrlCache, retryMissingOnSync } from '../card/blob-urls.js';
+import { followAppServer } from '../desktop/app-server.js';
+import { shell, type AppServerState } from '../shell-bridge.js';
 import { readLocal, writeLocal } from './local-settings.js';
 import { Router } from './router.js';
 import { Store } from './store.js';
@@ -28,6 +31,8 @@ export interface Services {
   theme: Store<ThemeChoice>;
   toasts: Toasts;
   blobs: BlobUrlCache;
+  /** The desktop app's server and what it is linked to; null in a browser, and until the app first reports it. */
+  appServer: Store<AppServerState | null>;
 }
 
 export const ServicesContext = createContext<Services | null>(null);
@@ -59,7 +64,10 @@ export async function createServices(client: SyncClient): Promise<Services> {
     theme: localStore<ThemeChoice>('theme', 'system'),
     toasts: new Toasts(),
     blobs: new BlobUrlCache({ getBlob: (hash) => client.getBlob(hash) }),
+    appServer: new Store<AppServerState | null>(null),
   };
+  const bridge = shell();
+  if (bridge) followAppServer(bridge, services.appServer);
   applyTheme(services.theme.get());
   services.theme.subscribe(() => applyTheme(services.theme.get()));
   retryMissingOnSync(client, services.blobs);

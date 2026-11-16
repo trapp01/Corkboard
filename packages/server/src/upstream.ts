@@ -34,6 +34,7 @@ export class Upstream {
   /** Aborted at close, so a blob request in flight never holds up shutdown. */
   private readonly stopping = new AbortController();
   private closed = false;
+  private refused = false;
 
   constructor(
     private readonly hub: Hub,
@@ -45,6 +46,11 @@ export class Upstream {
   /** True once the upstream has welcomed this server and until the socket closes. */
   get connected(): boolean {
     return this.welcomed;
+  }
+
+  /** True once the upstream has refused the token; the link then waits for a restart with another one. */
+  get tokenRefused(): boolean {
+    return this.refused;
   }
 
   start(): void {
@@ -105,7 +111,8 @@ export class Upstream {
       this.socket = null;
       if (this.closed) return;
       if (code === CLOSE_BAD_TOKEN) {
-        console.error(`The upstream server at ${this.access.url} refused the token in CORKBOARD_UPSTREAM_TOKEN; not retrying until restart`);
+        this.refused = true;
+        console.error(`The upstream server at ${this.access.url} refused the access token given for it; not retrying until restart`);
         return;
       }
       if (wasWelcomed) console.warn(`Lost the upstream server at ${this.access.url}; reconnecting`);

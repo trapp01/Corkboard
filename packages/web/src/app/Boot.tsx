@@ -1,12 +1,14 @@
 /**
  * Decides between first run and the app. A device that has a server and a
  * name for its changes goes straight to the app; otherwise first run asks
- * for whichever is missing.
+ * for whichever is missing. The desktop app always has its own server, so
+ * there the name decides.
  */
 import { useEffect, useState } from 'react';
 import { AppShell } from './AppShell.js';
 import { detectHostServer } from './connection.js';
 import { FirstRun } from './FirstRun.js';
+import { shell } from '../shell-bridge.js';
 import { useServices } from './services.js';
 import { useStore } from './store.js';
 import { useSyncStatus } from '../sync-ui/use-sync-status.js';
@@ -21,6 +23,7 @@ export function Boot({ persistent }: { persistent: boolean }) {
 
   useEffect(() => {
     if (phase !== 'checking') return;
+    if (shell()) return setPhase('first-run');
     let cancelled = false;
     void detectHostServer().then((address) => {
       if (cancelled) return;

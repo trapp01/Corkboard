@@ -26,5 +26,6 @@ One name per thing. Folders, types, config keys, MCP tools and UI copy use these
 | **Replica** | One device's full local copy of every doc and blob. | `packages/sync` |
 | **Replica store** | Where a replica keeps its docs and blobs on the device. | `packages/sync` |
 | **Server** | The self-hosted hub that replicas sync through and agents talk to. It is also a replica store, on disk. | `packages/server` |
+| **Desktop app** | Corkboard for macOS, Windows and Linux: a server on this computer, reachable from this computer only, with a window onto it. Its server can follow an upstream, which the app calls the server to sync with. | `packages/desktop` |
 | **Upstream** | Another Corkboard server that a server keeps in step with, so a copy on a laptop follows the one on a homelab. | `packages/server` |
 | **Snapshot** | A dated copy of the server's docs and blobs, kept for point-in-time restore. | `packages/server` |

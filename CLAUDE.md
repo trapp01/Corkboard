@@ -49,7 +49,8 @@ self-hosted server, which also answers agents at an MCP endpoint.
 ## Layout
 
 pnpm workspace, TypeScript, vitest. Packages are consumed as TypeScript source
-through the workspace; only `web` and `server` have a build. Folders inside
+through the workspace; only `web`, `server` and `desktop` have a build
+(`desktop` bundles the server into the Electron app). Folders inside
 `packages/web/src` are by domain (board, card, labels, …), not by file type.
 `packages/sync` and the storage half of `packages/server` began as copies of
 Looseleaf's; a fix to the wire protocol or the disk store belongs in both

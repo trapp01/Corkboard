@@ -17,6 +17,7 @@ import { Dialogs } from './Dialogs.js';
 import { guardLeaving } from './leave-guard.js';
 import { useServices } from './services.js';
 import { useShortcuts } from './shortcuts.js';
+import { useMenuCommands } from '../desktop/menu-commands.js';
 import { useStore } from './store.js';
 import { Toaster } from './toasts.js';
 import { TopBar } from './TopBar.js';
@@ -52,6 +53,7 @@ export function AppShell({ persistent }: { persistent: boolean }) {
 
   useEffect(() => guardLeaving(() => client.status.unstoredDocs > 0), [client]);
   useShortcuts(services, current);
+  useMenuCommands(services, current);
 
   const liveBoards = entries.filter((candidate) => candidate.archivedAt === null);
   let main;

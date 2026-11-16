@@ -2,10 +2,13 @@
 # Build: docker build -t corkboard .    Run: see docker-compose.yml and packages/server/README.md.
 
 FROM node:22-slim AS build
+# The desktop package is never installed here, but keep Electron's binary download off regardless.
+ENV ELECTRON_SKIP_BINARY_DOWNLOAD=1
 RUN corepack enable
 WORKDIR /src
 COPY . .
-RUN pnpm install --frozen-lockfile
+# Only the server, the web client and what they depend on.
+RUN pnpm install --frozen-lockfile --filter "@corkboard/server..." --filter "@corkboard/web..."
 # The web client builds into packages/web/dist.
 RUN pnpm --filter @corkboard/web build
 # One bundled file with every dependency inside it.

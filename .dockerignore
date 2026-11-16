@@ -1,6 +1,7 @@
 .git
 **/node_modules
 **/dist
+**/out
 data
 **/test-results
 **/*.log

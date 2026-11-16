@@ -20,12 +20,15 @@ agents keep up to date while they work.
   be enough to pick the task up cold.
 - **Your server.** Run one container on your homelab; every device syncs to
   it. No cloud account.
+- **Or just the app.** The desktop app for macOS, Windows and Linux runs a
+  server on your computer, so agents on that computer work from your boards
+  with no homelab at all.
 - **Works offline.** Every device keeps a full copy of the boards. Two
   devices can change the same card while both are offline and nothing is
   overwritten when they reconnect.
 - **Start on one computer, move to a server later.** A server can follow
-  another one, so a copy tried out on a laptop joins the homelab server
-  without an export.
+  another one, so boards tried out in the desktop app or with `pnpm start`
+  join the homelab server without an export.
 - **Goes with Looseleaf.** A card can link to a page in
   [Looseleaf](https://github.com/trapp01/Looseleaf), a notebook app built the
   same way, and shows the page's text. Notes and scopes live in the notebook;
@@ -41,6 +44,35 @@ matters.
 
 ## Run it on your own computer
 
+Two ways, both a Corkboard server on this computer that agents connect to:
+the desktop app, which keeps the server reachable from this computer only,
+or `pnpm start`, which serves every device on your network.
+
+### Desktop app
+
+There are no downloads yet; build it from a checkout (Node 22 and pnpm):
+
+```sh
+git clone https://github.com/trapp01/Corkboard.git && cd Corkboard
+pnpm install
+pnpm --filter @corkboard/web build
+pnpm --filter @corkboard/desktop package   # the app lands in packages/desktop/out/
+```
+
+The app runs its own server at `http://127.0.0.1:8422`, on this computer only,
+with its boards in the app's user data. First run asks whether to connect to a
+server or keep boards on this computer only, then for your name; there is no
+token to type. To sync with a server later, open Settings → **Sync** and enter
+its address and access token: the app's server then keeps in step with it as
+its upstream, so the boards follow you to other devices. Agents connect to the
+app the same way as to any server: **Connect an assistant** shows the address
+and token. If another program already uses port 8422 (a server started with
+`pnpm start`, say), the app starts on another port and says so. The build is not signed;
+[packages/desktop/README.md](packages/desktop/README.md) says how to open it
+and has the rest.
+
+### From the command line
+
 Needs Node 22 and pnpm.
 
 ```sh
@@ -50,7 +82,9 @@ pnpm start        # builds, then serves http://127.0.0.1:8422 with data in ./dat
 ```
 
 The first start prints an access token. Open `http://127.0.0.1:8422`, enter
-the token and your name, and make a board.
+the token and your name, and make a board. The server answers other devices
+on your network too; start it with `CORKBOARD_HOST=127.0.0.1` to keep it to
+this computer.
 
 To keep it running on a Mac from login,
 [docs/launchd/com.corkboard.server.plist](docs/launchd/com.corkboard.server.plist)
@@ -70,8 +104,9 @@ anything else. The server also keeps dated snapshots (14 by default).
 Settings and the restore steps are in
 [packages/server/README.md](packages/server/README.md).
 
-To bring boards from a copy on your own computer to the server, restart the
-copy with the server as its upstream:
+To bring boards from the desktop app to the server, enter the server in the
+app's Settings → **Sync**. For a copy started with `pnpm start`, restart it
+with the server as its upstream:
 
 ```sh
 CORKBOARD_UPSTREAM_URL=http://<your-server>:8422 CORKBOARD_UPSTREAM_TOKEN=<its token> pnpm start
@@ -107,6 +142,7 @@ Needs Node 22 and pnpm.
 ```sh
 pnpm install
 pnpm dev          # the web client with hot reload on :5173, over a dev server on :8423 (token: dev-token)
+pnpm --filter @corkboard/desktop dev   # the desktop app, after pnpm --filter @corkboard/web build
 pnpm test
 pnpm typecheck
 ```

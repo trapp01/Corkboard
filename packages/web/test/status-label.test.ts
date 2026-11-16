@@ -26,6 +26,19 @@ describe('describeStatus', () => {
     expect(describeStatus({ ...base, state: 'offline', lastError: { kind: 'bad-token', message: 'x', at: 0 } }).label).toBe('Wrong access token');
   });
 
+  it('speaks for the desktop app’s link once the window is in step with the app’s server', () => {
+    const app = { url: 'http://127.0.0.1:8422', upstream: null, looseleaf: null };
+    const linked = { ...app, upstream: { url: 'http://nas:8422', connected: true, tokenRefused: false } };
+    expect(describeStatus(base, app)).toMatchObject({ tone: 'local', label: 'On this computer' });
+    expect(describeStatus(base, linked)).toMatchObject({ tone: 'ok', label: 'Connected' });
+    expect(describeStatus(base, { ...linked, upstream: { ...linked.upstream, connected: false } })).toMatchObject({
+      tone: 'offline',
+      label: 'Offline — changes are saved on this computer',
+    });
+    expect(describeStatus(base, { ...linked, upstream: { ...linked.upstream, connected: false, tokenRefused: true } }).label).toBe('Wrong access token');
+    expect(describeStatus({ ...base, state: 'offline' }, linked)).toMatchObject({ tone: 'busy', label: 'Connecting…' });
+  });
+
   it('describes the last synced time', () => {
     const now = new Date(2026, 10, 15, 12, 0).getTime();
     expect(describeTime(null, now)).toBe('Never');

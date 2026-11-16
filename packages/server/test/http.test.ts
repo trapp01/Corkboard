@@ -104,6 +104,12 @@ describe('HTTP routes', () => {
     expect(response.headers.get('content-type')).toMatch(/text\/plain/);
     expect(await response.text()).toMatch(/no web client/);
   });
+
+  it('listens on the one interface given as host and names it in its address', async () => {
+    const server = await TestServer.start({ host: '127.0.0.1' });
+    expect(server.current.url).toBe(`http://127.0.0.1:${server.current.port}`);
+    expect(await (await fetch(`http://127.0.0.1:${server.current.port}/api/health`)).json()).toEqual({ ok: true });
+  });
 });
 
 describe('access token', () => {

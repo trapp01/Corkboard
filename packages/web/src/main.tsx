@@ -2,7 +2,8 @@
  * Starts the app: opens the replica store in IndexedDB, creates the one sync
  * client and the services over it, and renders. When IndexedDB cannot be
  * opened (some private windows) the replica lives in memory for the session
- * and the app says so.
+ * and the app says so. In the desktop app the client syncs with the app's
+ * own server before anything renders.
  */
 import '@fontsource/atkinson-hyperlegible-next/400.css';
 import '@fontsource/atkinson-hyperlegible-next/400-italic.css';
@@ -23,6 +24,8 @@ import { MemoryStore, openIndexedDbStore, SyncClient, type ClientStore } from '@
 import { Boot } from './app/Boot.js';
 import { createServices, ServicesContext } from './app/services.js';
 import { registerServiceWorker } from './app/service-worker.js';
+import { syncWithAppServer } from './desktop/app-server.js';
+import { shell } from './shell-bridge.js';
 
 async function start(): Promise<void> {
   const root = createRoot(document.getElementById('root')!);
@@ -36,6 +39,11 @@ async function start(): Promise<void> {
     persistent = false;
   }
   const client = await SyncClient.create({ store });
+  const bridge = shell();
+  if (bridge) {
+    document.documentElement.dataset.shell = bridge.platform;
+    await syncWithAppServer(client, bridge);
+  }
   const services = await createServices(client);
   window.addEventListener('online', () => client.retryNow());
   root.render(

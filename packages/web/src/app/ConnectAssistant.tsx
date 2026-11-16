@@ -1,20 +1,23 @@
 /**
  * Connect an assistant: the server's MCP address, the access token behind
  * Reveal, and the Claude Code command that adds this board server, each with
- * Copy. The token is read from this device's sync settings.
+ * Copy. The token is read from this device's sync settings; in the desktop app
+ * that is the app's own server, on whatever port it runs this time.
  */
 import { useState } from 'react';
 import { Copy, Eye, EyeOff } from 'lucide-react';
 import { copyText } from './clipboard.js';
 import { Dialog } from './controls.js';
 import { useServices } from './services.js';
+import { useStore } from './store.js';
 import { useSyncStatus } from '../sync-ui/use-sync-status.js';
 
 const HIDDEN = '••••••••••••••••';
 
 export function ConnectAssistant({ onClose }: { onClose: () => void }) {
-  const { client, toasts } = useServices();
+  const { client, toasts, appServer } = useServices();
   const status = useSyncStatus(client);
+  const app = useStore(appServer);
   const token = client.server?.token ?? null;
   const [revealed, setRevealed] = useState(false);
 
@@ -51,6 +54,12 @@ export function ConnectAssistant({ onClose }: { onClose: () => void }) {
         <CopyRow label="Claude Code" value={command(revealed ? token : HIDDEN)} onCopy={() => void copy(command(token), 'command')} wrap />
       )}
       <p className="muted small">Any MCP client works: give it the address above and an Authorization header of Bearer and the token.</p>
+      {app && (
+        <p className="muted small">
+          The app’s server answers on this computer only.
+          {app.upstream && ` Assistants on other devices connect to ${app.upstream.url}/mcp with that server’s token.`}
+        </p>
+      )}
     </Dialog>
   );
 }

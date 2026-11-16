@@ -17,9 +17,11 @@ a notebook app built the same way. `packages/sync` and the storage half of
 | `packages/model` | What a workspace, board, status, card and label are; reading and writing them inside Yjs docs; card refs and link targets; search; a board and a card as Markdown. | Networking, storage, the DOM, React. |
 | `packages/sync` | The wire protocol, the replica store interface, and the client that keeps a replica in step with a server. | What is inside a doc. Doc ids and bytes are opaque. |
 | `packages/server` | The hub: doc and blob storage on disk, the sync endpoint, snapshots, the MCP endpoint, the link to an upstream server, reading linked pages from Looseleaf, serving the web client. | What is inside a doc, except in `boards.ts` and the MCP tool files, which read and change boards only through `model`. |
-| `packages/web` | The user interface. Runs in a browser. | Disk paths, and how a doc is laid out inside Yjs (it reads and writes through `model`). |
+| `packages/web` | The user interface. Runs in a browser and in the desktop app's window. | Disk paths, and how a doc is laid out inside Yjs (it reads and writes through `model`). |
+| `packages/desktop` | The **desktop app**: a server started in its own process on 127.0.0.1, the window onto it, the native menu, and the app's settings (the server to sync with, the Looseleaf server). | What is inside a doc. It starts the server through `@corkboard/server` and talks to the web client only through the bridge in `packages/web/src/shell-bridge.ts`. |
 
-Imports flow one way: `web → model, sync`; `server → sync, model`. `model` and
+Imports flow one way: `web → model, sync`; `server → sync, model`;
+`desktop → server, sync`, plus the bridge's types from `web`. `model` and
 `sync` do not import each other. This is prose until a lint rule lands; a
 violation is a review finding.
 
@@ -224,6 +226,34 @@ connect and shortly after each doc change. The link reconnects with backoff.
 This is how a copy on a laptop is tried out first and joined to a homelab
 server later: start the homelab server, point the laptop's server at it, and
 the two converge.
+
+## Desktop app
+
+Agents reach boards only through a running server, so the desktop app is a
+server with a window. Its Electron main process calls `startServer` with
+`host: '127.0.0.1'`, a data folder in the app's user data and the built web
+client from the app's resources, then opens a window on
+`http://127.0.0.1:<port>/`. The page is served by that server and syncs with
+it exactly as a browser does with any server; agents on the same computer use
+its MCP endpoint with the token in its data folder.
+
+The port is 8422, so an agent's configuration keeps working. When another
+program answers there, the app starts on the port it fell back to last time,
+or a free one, and tells the person at each start while 8422 stays taken. The window's origin includes the
+port, so remembering the fallback keeps the window's replica and name.
+
+The page reaches the app through `window.corkboardShell` (declared in
+`packages/web/src/shell-bridge.ts`, set by the preload script). Through it the
+page learns the app server's address and token, so first run asks only where
+boards sync and for a name, and Settings saves the server to sync with and the
+Looseleaf server. Those two become `upstream` and `looseleaf` in
+`ServerOptions`; saving one writes the app's settings file and restarts the
+app's server on the same port, and the page's sync client reconnects on its
+own. The sync status then speaks for the link to the server to sync with, or
+says the boards are on this computer only.
+
+`packages/desktop/README.md` has the lifecycle, the security settings and the
+packaging.
 
 ## Server data folder
 

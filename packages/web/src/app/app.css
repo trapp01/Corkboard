@@ -58,6 +58,46 @@
   font-size: 13px;
 }
 
+/* First run in the desktop app: a server to sync with, or this computer only. */
+.first-run-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .choice:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+}
+
+.choice:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.choice span {
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
 /* Top bar */
 .top-bar {
   display: flex;
@@ -67,6 +107,27 @@
   padding: 6px 12px;
   background: color-mix(in oklab, var(--surface) 90%, var(--board) 10%);
   border-bottom: 1px solid color-mix(in oklab, var(--line) 70%, var(--board) 30%);
+}
+
+/*
+ * In the desktop app on macOS the window has no native title bar: the top bar
+ * is dragged to move the window and leaves room at its left for the window
+ * buttons. Windows and Linux keep the native frame.
+ */
+[data-shell='darwin'] .top-bar {
+  padding-left: 80px;
+}
+
+[data-shell='darwin'] .top-bar,
+[data-shell='darwin'] .first-run {
+  -webkit-app-region: drag;
+}
+
+/* A drag region takes clicks even under an overlay, so whatever can cover the top bar opts out. */
+[data-shell='darwin'] .top-bar :is(button, input, select, a),
+[data-shell='darwin'] .first-run-card,
+[data-shell='darwin'] :is(.modal-backdrop, .popover, .toaster) {
+  -webkit-app-region: no-drag;
 }
 
 .top-bar-brand {

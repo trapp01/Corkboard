@@ -1,13 +1,16 @@
 /**
  * The sync status control in the top bar: a small icon and a short label for
  * the current state. Pressing it opens the details: server, last synced time,
- * items still to send, the last error and "Retry now".
+ * items still to send, the last error and "Retry now". In the desktop app the
+ * server shown is the server to sync with, and the app's server retries that
+ * link itself.
  */
 import { useEffect, useRef, useState } from 'react';
 import { CircleAlert, CloudCheck, CloudOff, Laptop, RefreshCw, type LucideIcon } from 'lucide-react';
 import type { SyncStatus } from '@corkboard/sync';
 import { Popover } from '../app/controls.js';
 import { useServices } from '../app/services.js';
+import { useStore } from '../app/store.js';
 import { patchUi } from '../app/ui-state.js';
 import { describeTime } from '../app/time.js';
 import { describeStatus, type StatusTone } from './status-label.js';
@@ -22,9 +25,9 @@ const ICONS: Record<StatusTone, LucideIcon> = {
 };
 
 export function SyncStatusControl({ compact = false }: { compact?: boolean }) {
-  const { client } = useServices();
+  const { client, appServer } = useServices();
   const status = useSyncStatus(client);
-  const label = describeStatus(status);
+  const label = describeStatus(status, useStore(appServer));
   const Icon = ICONS[label.tone];
   const button = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
@@ -52,8 +55,10 @@ export function SyncStatusControl({ compact = false }: { compact?: boolean }) {
 }
 
 export function SyncDetails({ status, onClose }: { status: SyncStatus; onClose?: () => void }) {
-  const { client, ui } = useServices();
-  const label = describeStatus(status);
+  const { client, ui, appServer } = useServices();
+  const app = useStore(appServer);
+  const label = describeStatus(status, app);
+  const server = app ? (app.upstream?.url ?? null) : status.server;
   const [, tick] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => tick((n) => n + 1), 30_000);
@@ -65,8 +70,8 @@ export function SyncDetails({ status, onClose }: { status: SyncStatus; onClose?:
       <p className="sync-details-lead">{label.detail}</p>
       <dl className="details-list">
         <dt>Server</dt>
-        <dd>{status.server ?? 'None'}</dd>
-        {status.server && (
+        <dd>{server ?? 'None'}</dd>
+        {status.server && !app && (
           <>
             <dt>Last synced</dt>
             <dd>{describeTime(status.lastSyncedAt)}</dd>
@@ -111,7 +116,7 @@ export function SyncDetails({ status, onClose }: { status: SyncStatus; onClose?:
             Settings
           </button>
         )}
-        {status.server && (
+        {status.server && !app && (
           <button className="button primary" disabled={status.state !== 'offline'} onClick={() => client.retryNow()}>
             Retry now
           </button>
