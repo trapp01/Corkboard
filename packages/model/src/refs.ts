@@ -2,6 +2,7 @@
  * The text forms that point at things: a card ref (`WEB-12`), and a link
  * target, which is a URL or `looseleaf:<pageId>` for a page in Looseleaf.
  */
+import { BOARD_KEY_MAX_LENGTH } from './workspace.js';
 
 /** `WEB-12` for card 12 on the board whose key is WEB. */
 export function formatCardRef(boardKey: string, cardNumber: number): string {
@@ -11,11 +12,12 @@ export function formatCardRef(boardKey: string, cardNumber: number): string {
 /**
  * Reads a card ref out of what a person or an agent typed: `WEB-12`,
  * `web-12`, `#WEB-12`, or a card's address ending in `/c/WEB-12`. Null when
- * the text holds no ref.
+ * the text holds no ref. A key longer than a board key can be is no ref, so a
+ * card id that happens to end in a dash and digits is not read as one.
  */
 export function parseCardRef(text: string): { key: string; number: number } | null {
   const match = /(?:^|[/#\s])([A-Za-z][A-Za-z0-9]*)-(\d+)\/?$/.exec(text.trim());
-  if (match === null) return null;
+  if (match === null || match[1]!.length > BOARD_KEY_MAX_LENGTH) return null;
   return { key: match[1]!.toUpperCase(), number: Number(match[2]) };
 }
 

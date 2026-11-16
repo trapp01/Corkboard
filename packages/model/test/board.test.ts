@@ -268,6 +268,7 @@ describe('text forms', () => {
     expect(parseCardRef('http://127.0.0.1:8422/c/WEB-12')).toEqual({ key: 'WEB', number: 12 });
     expect(parseCardRef('#A2-7')).toEqual({ key: 'A2', number: 7 });
     expect(parseCardRef('twelve')).toBeNull();
+    expect(parseCardRef('IFCI4HLFG2UG0PZLU6V-9')).toBeNull();
     expect(parseLinkTarget('looseleaf:GjCU_n-8w')).toEqual({ kind: 'looseleaf', pageId: 'GjCU_n-8w' });
     expect(parseLinkTarget('https://example.com/pr/4')).toEqual({ kind: 'url', url: 'https://example.com/pr/4' });
     expect(parseLinkTarget('javascript:alert(1)')).toBeNull();

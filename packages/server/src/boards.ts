@@ -73,22 +73,21 @@ export class Boards {
 
   /** The card a caller named by ref (`WEB-12`), by its address, or by id. Throws NotFoundError otherwise. */
   async card(text: string): Promise<OpenCard> {
-    const ref = parseCardRef(text);
-    if (ref !== null) {
-      const boards = await this.list();
-      const entry = boards.find((board) => board.key === ref.key);
-      if (entry === undefined) throw new NotFoundError(`No board has the key ${ref.key}. The boards are: ${describeBoards(boards) || 'none yet'}.`);
-      const board = await this.hub.read(boardDocId(entry.id), readBoard);
-      const card = board.cards.find((candidate) => candidate.number === ref.number);
-      if (card === undefined) throw new NotFoundError(`${entry.name} has no card ${formatCardRef(ref.key, ref.number)}. Find cards with search_cards.`);
-      return { entry, board, card, ref: formatCardRef(entry.key, card.number) };
-    }
-    for (const entry of await this.list()) {
+    const boards = await this.list();
+    // An id is tried first: it is exact, and nothing a person types as a ref is 21 characters of an id.
+    for (const entry of boards) {
       const board = await this.hub.read(boardDocId(entry.id), readBoard);
       const card = board.cards.find((candidate) => candidate.id === text.trim());
       if (card !== undefined) return { entry, board, card, ref: formatCardRef(entry.key, card.number) };
     }
-    throw new NotFoundError(`"${text}" is not a card ref such as WEB-12, a card address or a card id. Find cards with search_cards.`);
+    const ref = parseCardRef(text);
+    if (ref === null) throw new NotFoundError(`"${text}" is not a card ref such as WEB-12, a card address or a card id. Find cards with search_cards.`);
+    const entry = boards.find((board) => board.key === ref.key);
+    if (entry === undefined) throw new NotFoundError(`No board has the key ${ref.key}. The boards are: ${describeBoards(boards) || 'none yet'}.`);
+    const board = await this.hub.read(boardDocId(entry.id), readBoard);
+    const card = board.cards.find((candidate) => candidate.number === ref.number);
+    if (card === undefined) throw new NotFoundError(`${entry.name} has no card ${formatCardRef(ref.key, ref.number)}. Find cards with search_cards.`);
+    return { entry, board, card, ref: formatCardRef(entry.key, card.number) };
   }
 
   /** Changes one board's doc. `change` gets the live doc and runs in one transaction. */
