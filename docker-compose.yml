@@ -1,0 +1,25 @@
+services:
+  corkboard:
+    build: .
+    image: corkboard
+    restart: unless-stopped
+    ports:
+      - "8422:8422"
+    environment:
+      # The access token every device and every AI assistant uses. Set it here or in a .env file
+      # next to this one. Left empty, the server generates a token into the data volume on first
+      # start and prints it in `docker compose logs corkboard`.
+      CORKBOARD_TOKEN: ${CORKBOARD_TOKEN:-}
+      # Daily snapshots to keep under /data/snapshots.
+      CORKBOARD_SNAPSHOT_KEEP: "14"
+      # A Looseleaf server to read linked pages from. Leave both empty for none.
+      CORKBOARD_LOOSELEAF_URL: ${CORKBOARD_LOOSELEAF_URL:-}
+      CORKBOARD_LOOSELEAF_TOKEN: ${CORKBOARD_LOOSELEAF_TOKEN:-}
+    volumes:
+      # A named volume. To keep the data next to this file instead, use ./data:/data and make
+      # sure ./data is writable by uid 1000, the image's `node` user.
+      - corkboard-data:/data
+    stop_grace_period: 30s
+
+volumes:
+  corkboard-data:

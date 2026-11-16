@@ -1,0 +1,129 @@
+/*
+ * Design tokens. Light by default; dark follows the system unless Settings
+ * picks one (data-theme on <html>). The dark values are written twice, once
+ * for each way of choosing dark, because CSS cannot share a block between them.
+ */
+:root {
+  --backdrop-base: #d6dce4;
+  --board: #3b73d6;
+  --column: #eef1f5;
+  --card: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --input: #ffffff;
+  --hover: rgba(27, 35, 48, 0.06);
+  --pressed: rgba(27, 35, 48, 0.1);
+  --ink: #1b2330;
+  --ink-muted: #556173;
+  --ink-faint: #7f8a9a;
+  --line: #d3d9e2;
+  --line-strong: #b9c2ce;
+  --accent: #2b4fae;
+  --accent-hover: #233f8c;
+  --accent-soft: rgba(43, 79, 174, 0.1);
+  --on-accent: #ffffff;
+  --pin: #d6453d;
+  --rule: #a9bbe2;
+  --ink-rule: rgba(27, 35, 48, 0.2);
+  --danger: #b42318;
+  --ok: #1f7a4d;
+  --overdue-bg: #fbe0dd;
+  --overdue-fg: #9b1c14;
+  --today-bg: #fdf0c8;
+  --today-fg: #6b4e00;
+  --flash: #f2b705;
+  --focus: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+  --shadow-card: 0 1px 0 rgba(27, 35, 48, 0.12), 0 1px 3px rgba(27, 35, 48, 0.06);
+  --shadow-lift: 0 10px 24px rgba(27, 35, 48, 0.22), 0 2px 6px rgba(27, 35, 48, 0.12);
+  --shadow-pop: 0 6px 16px rgba(27, 35, 48, 0.14), 0 18px 40px rgba(27, 35, 48, 0.14);
+  --scrim: rgba(18, 24, 33, 0.5);
+
+  --font-ui: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --radius: 6px;
+  --radius-card: 8px;
+  --radius-column: 12px;
+  --column-width: 272px;
+  --gap: 12px;
+  --tap: 32px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --backdrop-base: #141920;
+    --column: #1d232c;
+    --card: #2a313b;
+    --surface: #1f252e;
+    --surface-raised: #272e38;
+    --input: #171c23;
+    --hover: rgba(230, 234, 240, 0.07);
+    --pressed: rgba(230, 234, 240, 0.12);
+    --ink: #e6eaf0;
+    --ink-muted: #a7b1bf;
+    --ink-faint: #7e8898;
+    --line: #353d48;
+    --line-strong: #4a5462;
+    --accent: #93b2ff;
+    --accent-hover: #b0c7ff;
+    --accent-soft: rgba(147, 178, 255, 0.14);
+    --on-accent: #0f1a33;
+    --pin: #ff7468;
+    --rule: #4b6091;
+    --ink-rule: rgba(230, 234, 240, 0.22);
+    --danger: #ff8a7f;
+    --ok: #6fd39c;
+    --overdue-bg: #5b1f1b;
+    --overdue-fg: #ffc2bb;
+    --today-bg: #4a3b0a;
+    --today-fg: #f9e19a;
+    --flash: #f5c542;
+    --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25);
+    --shadow-lift: 0 12px 28px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+    --shadow-pop: 0 8px 20px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.4);
+    --scrim: rgba(4, 7, 11, 0.62);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --backdrop-base: #141920;
+  --column: #1d232c;
+  --card: #2a313b;
+  --surface: #1f252e;
+  --surface-raised: #272e38;
+  --input: #171c23;
+  --hover: rgba(230, 234, 240, 0.07);
+  --pressed: rgba(230, 234, 240, 0.12);
+  --ink: #e6eaf0;
+  --ink-muted: #a7b1bf;
+  --ink-faint: #7e8898;
+  --line: #353d48;
+  --line-strong: #4a5462;
+  --accent: #93b2ff;
+  --accent-hover: #b0c7ff;
+  --accent-soft: rgba(147, 178, 255, 0.14);
+  --on-accent: #0f1a33;
+  --pin: #ff7468;
+  --rule: #4b6091;
+  --ink-rule: rgba(230, 234, 240, 0.22);
+  --danger: #ff8a7f;
+  --ok: #6fd39c;
+  --overdue-bg: #5b1f1b;
+  --overdue-fg: #ffc2bb;
+  --today-bg: #4a3b0a;
+  --today-fg: #f9e19a;
+  --flash: #f5c542;
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-lift: 0 12px 28px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 8px 20px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.4);
+  --scrim: rgba(4, 7, 11, 0.62);
+  color-scheme: dark;
+}
+
+@media (pointer: coarse) {
+  :root {
+    --tap: 44px;
+  }
+}

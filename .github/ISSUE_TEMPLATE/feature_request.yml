@@ -1,0 +1,18 @@
+name: Feature request
+description: Something Corkboard should do
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        [docs/trello-parity.md](https://github.com/trapp01/Corkboard/blob/main/docs/trello-parity.md) lists what is built, planned and not planned. Please check it first.
+  - type: textarea
+    id: what
+    attributes:
+      label: What should it do
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today instead

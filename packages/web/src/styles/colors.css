@@ -1,0 +1,110 @@
+/*
+ * The ten colour names a board or a label can take (COLOR_NAMES in
+ * packages/model) and their values: a swatch, and a label chip's background
+ * and text. Chip pairs keep text at 4.5:1 contrast or better in both themes.
+ * `.color-<name>` sets --swatch, --chip-bg and --chip-fg on an element;
+ * `[data-board-color=<name>]` sets --board, which tints the board's backdrop.
+ */
+:root {
+  --green: #2f9e5b;
+  --lime: #74a83a;
+  --yellow: #d9a90b;
+  --orange: #e2772c;
+  --red: #d64545;
+  --pink: #d2559a;
+  --purple: #8559d0;
+  --blue: #3b73d6;
+  --teal: #1f9aa0;
+  --gray: #7b8794;
+
+  --green-bg: #cdeed9;
+  --green-fg: #14532d;
+  --lime-bg: #e2f2c4;
+  --lime-fg: #38500f;
+  --yellow-bg: #fbeeb0;
+  --yellow-fg: #5c4400;
+  --orange-bg: #fddcc2;
+  --orange-fg: #7a3405;
+  --red-bg: #fbd3d0;
+  --red-fg: #8a1c16;
+  --pink-bg: #f9d3e7;
+  --pink-fg: #84194f;
+  --purple-bg: #e5d9fb;
+  --purple-fg: #4c2a91;
+  --blue-bg: #d4e2fb;
+  --blue-fg: #1d3f86;
+  --teal-bg: #c8ecec;
+  --teal-fg: #0f5257;
+  --gray-bg: #e1e5ea;
+  --gray-fg: #39424e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --green-bg: #1d4a31;
+    --green-fg: #b8ecca;
+    --lime-bg: #34481a;
+    --lime-fg: #d6efa9;
+    --yellow-bg: #4d3d05;
+    --yellow-fg: #f6e08a;
+    --orange-bg: #5a2e0f;
+    --orange-fg: #fbc79f;
+    --red-bg: #5e1f1c;
+    --red-fg: #f8b4ae;
+    --pink-bg: #5a1d3d;
+    --pink-fg: #f5b3d6;
+    --purple-bg: #3a2a63;
+    --purple-fg: #d6c5fa;
+    --blue-bg: #1e3361;
+    --blue-fg: #bcd2fa;
+    --teal-bg: #11474a;
+    --teal-fg: #a6e3e3;
+    --gray-bg: #343c47;
+    --gray-fg: #d3d9e1;
+  }
+}
+
+:root[data-theme='dark'] {
+  --green-bg: #1d4a31;
+  --green-fg: #b8ecca;
+  --lime-bg: #34481a;
+  --lime-fg: #d6efa9;
+  --yellow-bg: #4d3d05;
+  --yellow-fg: #f6e08a;
+  --orange-bg: #5a2e0f;
+  --orange-fg: #fbc79f;
+  --red-bg: #5e1f1c;
+  --red-fg: #f8b4ae;
+  --pink-bg: #5a1d3d;
+  --pink-fg: #f5b3d6;
+  --purple-bg: #3a2a63;
+  --purple-fg: #d6c5fa;
+  --blue-bg: #1e3361;
+  --blue-fg: #bcd2fa;
+  --teal-bg: #11474a;
+  --teal-fg: #a6e3e3;
+  --gray-bg: #343c47;
+  --gray-fg: #d3d9e1;
+}
+
+.color-green { --swatch: var(--green); --chip-bg: var(--green-bg); --chip-fg: var(--green-fg); }
+.color-lime { --swatch: var(--lime); --chip-bg: var(--lime-bg); --chip-fg: var(--lime-fg); }
+.color-yellow { --swatch: var(--yellow); --chip-bg: var(--yellow-bg); --chip-fg: var(--yellow-fg); }
+.color-orange { --swatch: var(--orange); --chip-bg: var(--orange-bg); --chip-fg: var(--orange-fg); }
+.color-red { --swatch: var(--red); --chip-bg: var(--red-bg); --chip-fg: var(--red-fg); }
+.color-pink { --swatch: var(--pink); --chip-bg: var(--pink-bg); --chip-fg: var(--pink-fg); }
+.color-purple { --swatch: var(--purple); --chip-bg: var(--purple-bg); --chip-fg: var(--purple-fg); }
+.color-blue { --swatch: var(--blue); --chip-bg: var(--blue-bg); --chip-fg: var(--blue-fg); }
+.color-teal { --swatch: var(--teal); --chip-bg: var(--teal-bg); --chip-fg: var(--teal-fg); }
+.color-gray { --swatch: var(--gray); --chip-bg: var(--gray-bg); --chip-fg: var(--gray-fg); }
+
+[data-board-color='green'] { --board: var(--green); }
+[data-board-color='lime'] { --board: var(--lime); }
+[data-board-color='yellow'] { --board: var(--yellow); }
+[data-board-color='orange'] { --board: var(--orange); }
+[data-board-color='red'] { --board: var(--red); }
+[data-board-color='pink'] { --board: var(--pink); }
+[data-board-color='purple'] { --board: var(--purple); }
+[data-board-color='blue'] { --board: var(--blue); }
+[data-board-color='teal'] { --board: var(--teal); }
+[data-board-color='gray'] { --board: var(--gray); }

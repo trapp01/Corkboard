@@ -1,0 +1,11 @@
+{
+  "name": "Corkboard",
+  "short_name": "Corkboard",
+  "description": "A kanban board that people and AI agents work from together.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#dfe3e8",
+  "theme_color": "#2b4fae",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

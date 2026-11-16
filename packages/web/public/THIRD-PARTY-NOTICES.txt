@@ -1,0 +1,38 @@
+Third-party notices
+
+Corkboard is licensed under the Mozilla Public License 2.0. Builds of its web
+client also contain the works below, each under its own licence. The full
+licence texts ship with each package in node_modules.
+
+--------------------------------------------------------------------------------
+Lucide icons (lucide-react)
+Copyright (c) Lucide Contributors. ISC License.
+https://lucide.dev
+
+Atkinson Hyperlegible Next and Atkinson Hyperlegible Mono (via @fontsource)
+Copyright Braille Institute of America. SIL Open Font License 1.1.
+https://www.brailleinstitute.org/freefont/
+
+React and React DOM
+Copyright (c) Meta Platforms, Inc. and affiliates. MIT License.
+
+dnd kit (@dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities)
+Copyright (c) 2021 Claudéric Demers. MIT License.
+
+marked
+Copyright (c) 2018+, MarkedJS; Copyright (c) 2011-2018, Christopher Jeffrey. MIT License.
+
+DOMPurify
+Copyright 2025 Dr.-Ing. Mario Heiderich, Cure53. Apache License 2.0 or MPL 2.0.
+
+Yjs
+Copyright (c) 2023 Kevin Jahns. MIT License.
+
+nanoid
+Copyright 2017 Andrey Sitnik. MIT License.
+
+fractional-indexing
+Copyright (c) 2021 rocicorp. CC0 1.0.
+
+@noble/hashes
+Copyright (c) 2022 Paul Miller. MIT License.

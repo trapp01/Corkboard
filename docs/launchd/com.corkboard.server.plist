@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Runs the Corkboard server at login on a Mac and restarts it if it stops.
+  Replace every /Users/you path, check the path to node (`which node`), then:
+
+    cp docs/launchd/com.corkboard.server.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.corkboard.server.plist
+
+  Stop and remove it with:
+
+    launchctl bootout gui/$(id -u)/com.corkboard.server
+    rm ~/Library/LaunchAgents/com.corkboard.server.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.corkboard.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/node</string>
+    <string>/Users/you/Corkboard/packages/server/dist/server.js</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>CORKBOARD_DATA</key>
+    <string>/Users/you/Corkboard-data</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/you/Corkboard-data/server.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/you/Corkboard-data/server.log</string>
+</dict>
+</plist>

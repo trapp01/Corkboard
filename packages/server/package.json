@@ -1,0 +1,33 @@
+{
+  "name": "@corkboard/server",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/server.ts",
+  "types": "src/server.ts",
+  "exports": {
+    ".": "./src/server.ts"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file=dev.env src/main.ts",
+    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/server.js --banner:js=\"import { createRequire as createBannerRequire } from 'node:module'; const require = createBannerRequire(import.meta.url);\"",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@corkboard/model": "workspace:*",
+    "@corkboard/sync": "workspace:*",
+    "@noble/hashes": "^2.4.0",
+    "lib0": "^0.2.120",
+    "ws": "^8.23.0",
+    "yjs": "^13.6.33"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@types/ws": "^8.18.2",
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.8"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@corkboard/model",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MPL-2.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "fractional-indexing": "^4.0.0",
+    "nanoid": "^6.0.2",
+    "yjs": "^13.6.33"
+  }
+}
