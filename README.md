@@ -98,6 +98,10 @@ docker compose up -d
 docker compose logs corkboard   # prints the access token on first start
 ```
 
+That pulls `ghcr.io/trapp01/corkboard:latest`, published from `main` for amd64 and
+arm64. To update, run `docker compose pull && docker compose up -d`. To build
+from the checkout instead, run `docker compose up -d --build`.
+
 Open `http://<your-server>:8422` and enter the access token. Boards live in
 the `data` volume as plain files; back that folder up however you back up
 anything else. The server also keeps dated snapshots (14 by default).

@@ -14,7 +14,8 @@ HTTP and the WebSocket share one port.
 | `pnpm --filter @corkboard/server dev` | Runs `src/main.ts` with `tsx watch` and the settings in `dev.env`: port 8423, data in `packages/server/data`, token `dev-token`. |
 | `pnpm --filter @corkboard/server build` | Bundles the server and its dependencies into `dist/server.js` with esbuild. |
 | `pnpm --filter @corkboard/server start` | Runs the bundle: `node dist/server.js`. |
-| `docker compose up -d` | Builds the image from the repo root `Dockerfile` and runs it with a named volume. |
+| `docker compose up -d` | Pulls `ghcr.io/trapp01/corkboard:latest` and runs it with a named volume. |
+| `docker compose up -d --build` | Builds the image from the repo root `Dockerfile` instead of pulling it. |
 
 The bundle needs only Node 22; copy `dist/server.js` anywhere and run it.
 

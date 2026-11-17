@@ -1,7 +1,8 @@
 services:
   corkboard:
+    # The published image. `docker compose up -d --build` builds from this checkout instead.
+    image: ghcr.io/trapp01/corkboard:latest
     build: .
-    image: corkboard
     restart: unless-stopped
     ports:
       - "8422:8422"
