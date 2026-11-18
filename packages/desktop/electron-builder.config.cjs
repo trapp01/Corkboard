@@ -18,6 +18,8 @@ module.exports = {
   files: ['dist/**', 'package.json'],
   extraResources: [{ from: webDir, to: 'web' }],
   npmRebuild: false,
+  // electron-builder uploads nothing and writes no update file of its own; CI publishes the build and updater.ts reads it.
+  publish: null,
   // The packaged binary cannot be turned into a plain Node runtime or debugger by flags or environment.
   electronFuses: {
     runAsNode: false,

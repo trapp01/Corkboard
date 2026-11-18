@@ -31,6 +31,15 @@ const bridge: ShellBridge = {
   setUpstream: (link) => ipcRenderer.invoke(CHANNELS.setUpstream, link),
   setLooseleaf: (link) => ipcRenderer.invoke(CHANNELS.setLooseleaf, link),
   openLooseleafPage: (appAddress, webAddress) => ipcRenderer.invoke(CHANNELS.openLooseleafPage, appAddress, webAddress),
+  onUpdateReady(listener) {
+    const unsubscribe = listen<string>(CHANNELS.updateReadyEvent, listener);
+    // An update that was ready before this page loaded sent its event to no one.
+    void ipcRenderer.invoke(CHANNELS.updateReady).then((version: string | null) => {
+      if (version !== null) listener(version);
+    });
+    return unsubscribe;
+  },
+  restartToUpdate: () => ipcRenderer.invoke(CHANNELS.restartToUpdate),
   onServerState: (listener) => listen<AppServerState>(CHANNELS.serverStateChanged, listener),
   onMenuCommand: (listener) => listen<MenuCommand>(CHANNELS.menuCommand, listener),
 };

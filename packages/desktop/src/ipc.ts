@@ -23,6 +23,8 @@ export interface HandlerDeps {
   hasAppFor(address: string): boolean;
   /** Hands an address to the operating system to open. */
   openExternal(address: string): Promise<void>;
+  /** The in-app updater: the version waiting for the app to quit, or null, and quitting to install it. */
+  update: { readyVersion(): string | null; restart(): void };
 }
 
 export type Handler = (args: unknown[]) => Promise<unknown>;
@@ -92,6 +94,16 @@ export function createHandlers(deps: HandlerDeps): Record<InvokeChannel, Handler
     async [CHANNELS.setLooseleaf](args) {
       expectArgCount(args, 1, CHANNELS.setLooseleaf);
       return save({ looseleaf: expectLinkOrNull(args[0]) });
+    },
+
+    async [CHANNELS.updateReady](args) {
+      expectArgCount(args, 0, CHANNELS.updateReady);
+      return deps.update.readyVersion();
+    },
+
+    async [CHANNELS.restartToUpdate](args) {
+      expectArgCount(args, 0, CHANNELS.restartToUpdate);
+      if (deps.update.readyVersion() !== null) deps.update.restart();
     },
 
     async [CHANNELS.openLooseleafPage](args) {

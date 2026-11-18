@@ -29,3 +29,4 @@ One name per thing. Folders, types, config keys, MCP tools and UI copy use these
 | **Desktop app** | Corkboard for macOS, Windows and Linux: a server on this computer, reachable from this computer only, with a window onto it. Its server can follow an upstream, which the app calls the server to sync with. | `packages/desktop` |
 | **Upstream** | Another Corkboard server that a server keeps in step with, so a copy on a laptop follows the one on a homelab. | `packages/server` |
 | **Snapshot** | A dated copy of the server's docs and blobs, kept for point-in-time restore. | `packages/server` |
+| **Update manifest** | `latest.json` on the release CI replaces with every build: the newest Mac build's version, zip name, sha256 and size. The desktop app reads it to update itself. | `packages/desktop/src/updater.ts` |

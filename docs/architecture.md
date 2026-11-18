@@ -263,8 +263,15 @@ app's server on the same port, and the page's sync client reconnects on its
 own. The sync status then speaks for the link to the server to sync with, or
 says the boards are on this computer only.
 
-`packages/desktop/README.md` has the lifecycle, the security settings and the
-packaging.
+The packaged Mac app replaces itself with newer builds. CI publishes each
+build of `main` as a zip and an update manifest, `latest.json`, on one
+release; `packages/desktop/src/updater.ts` reads the manifest, downloads and
+checks a later build, and swaps it in after the app and its server have
+exited. The web client's only part is the bar that says an update is ready
+(`desktop/UpdateBar.tsx`), reached through two bridge calls.
+
+`packages/desktop/README.md` has the lifecycle, the security settings, the
+packaging, and the update steps with their limits.
 
 ## Server data folder
 

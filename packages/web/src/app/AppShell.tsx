@@ -18,6 +18,7 @@ import { guardLeaving } from './leave-guard.js';
 import { useServices } from './services.js';
 import { useShortcuts } from './shortcuts.js';
 import { useMenuCommands } from '../desktop/menu-commands.js';
+import { UpdateBar } from '../desktop/UpdateBar.js';
 import { useStore } from './store.js';
 import { Toaster } from './toasts.js';
 import { TopBar } from './TopBar.js';
@@ -66,6 +67,7 @@ export function AppShell({ persistent }: { persistent: boolean }) {
     <BoardContext.Provider value={current}>
       <div className="app" data-board-color={entry?.color}>
         <TopBar entries={entries} current={current} />
+        <UpdateBar />
         {!persistent && <div className="banner">This browser isn’t keeping data for this site, so changes last until the tab closes.</div>}
         <main className="main-area">{main}</main>
         {route.kind === 'card' &&

@@ -125,6 +125,11 @@ kbd {
   text-align: center;
 }
 
+.update-bar {
+  gap: 12px;
+  background: var(--accent-soft);
+}
+
 /* Buttons */
 .button {
   display: inline-flex;

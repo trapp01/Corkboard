@@ -30,6 +30,7 @@ function setup() {
     settingsFile,
     hasAppFor: (address) => installed.looseleaf && address.startsWith('looseleaf:'),
     openExternal: async (address) => void opened.push(address),
+    update: { readyVersion: () => null, restart: () => undefined },
   });
   return { handlers, server, settingsFile, opened, installed };
 }

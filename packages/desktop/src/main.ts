@@ -4,6 +4,7 @@
  * boards at its MCP endpoint, and opens one window on that server's web
  * client, which syncs with it as a browser would. It also owns the native
  * menu, the bridge's IPC handlers, and closing the server cleanly on quit.
+ * A packaged Mac build also keeps itself up to date through `updater.ts`.
  * It knows nothing about boards.
  *
  * Unpackaged runs read three environment variables: CORKBOARD_WEB_DIR serves
@@ -11,13 +12,15 @@
  * data folder elsewhere, and CORKBOARD_PORT replaces 8422 (0 for any free
  * port). Packaged builds ignore all three.
  */
-import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, screen, session, shell, type WebContents } from 'electron';
+import { app, BrowserWindow, clipboard, dialog, ipcMain, Menu, net, screen, session, shell, type WebContents } from 'electron';
+import { execFile, spawn } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { CHANNELS } from './channels.js';
 import { DEFAULT_PORT, EmbeddedServer } from './embedded-server.js';
 import { createHandlers, isSameOrigin } from './ipc.js';
 import { menuTemplate } from './menu.js';
 import { loadSettings, saveSettings } from './settings-file.js';
+import { bundleOf, Updater, whyNoUpdates } from './updater.js';
 import { loadWindowState, MIN_HEIGHT, MIN_WIDTH, saveWindowState } from './window-state.js';
 
 const dev = !app.isPackaged;
@@ -29,6 +32,10 @@ const preferredPort = dev && process.env.CORKBOARD_PORT ? Number(process.env.COR
 const SERVER_STATE_POLL_MS = 1000;
 /** How long quitting waits for the server to store pending writes before the app exits anyway. */
 const QUIT_TIMEOUT_MS = 8000;
+const BUNDLE_ID = 'org.corkboard.desktop';
+/** The release CI replaces on every build of main; it holds `latest.json` and the Mac zip. */
+const UPDATE_RELEASE_URL = 'https://github.com/trapp01/Corkboard/releases/download/latest';
+const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000;
 
 if (dev && process.env.CORKBOARD_USER_DATA_DIR) app.setPath('userData', resolve(process.env.CORKBOARD_USER_DATA_DIR));
 app.enableSandbox();
@@ -40,6 +47,8 @@ let mainWindow: BrowserWindow | null = null;
 /** A window can open once the server has an address for it to load. */
 let serverStarted = false;
 let serverClosed = false;
+// Set once this install is known to be one that can update itself.
+let updater: Updater | null = null;
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -75,6 +84,8 @@ if (!app.requestSingleInstanceLock()) {
       },
     );
   });
+  // Runs after the server has closed, so the swap never moves the app from under a server that is still writing.
+  app.on('will-quit', () => updater?.applyOnQuit());
   app.on('web-contents-created', (_event, contents) => guardNavigation(contents));
   app.whenReady().then(start).catch((error: unknown) => {
     console.error(error);
@@ -95,6 +106,46 @@ async function start(): Promise<void> {
   const openedAtLogin = process.platform === 'darwin' && app.getLoginItemSettings().wasOpenedAtLogin;
   if (!openedAtLogin) createWindow();
   if (server.onOtherPort) void showPortNotice();
+  startUpdater().catch((error: unknown) => console.error(error));
+}
+
+/** Checks for a newer build now and every few hours, when this install is one that can replace itself. */
+async function startUpdater(): Promise<void> {
+  const bundle = process.platform === 'darwin' ? bundleOf(app.getPath('exe')) : null;
+  const reason = await whyNoUpdates({ packaged: app.isPackaged, platform: process.platform, arch: process.arch, bundle });
+  if (reason !== null || bundle === null) {
+    if (app.isPackaged) console.warn(`In-app updates are off: ${reason}`);
+    return;
+  }
+  const checker = new Updater({
+    currentVersion: app.getVersion(),
+    bundleId: BUNDLE_ID,
+    bundle,
+    updatesDir: join(app.getPath('userData'), 'updates'),
+    releaseUrl: UPDATE_RELEASE_URL,
+    pid: process.pid,
+    fetch: (url) => net.fetch(url, { headers: { 'Cache-Control': 'no-cache' } }),
+    run: (command, args) =>
+      new Promise((done, fail) => {
+        execFile(command, args, (error, stdout, stderr) => (error ? fail(new Error(`${command}: ${stderr || error.message}`)) : done(stdout)));
+      }),
+    spawnDetached: (command, args) => spawn(command, args, { detached: true, stdio: 'ignore' }).unref(),
+    onReady: (version) => mainWindow?.webContents.send(CHANNELS.updateReadyEvent, version),
+    log: (message) => console.log(message),
+  });
+  updater = checker;
+  void checker.check();
+  setInterval(() => void checker.check(), UPDATE_CHECK_INTERVAL_MS);
+}
+
+/** Quits to install the waiting update and reopens the app, unless the window refuses to close. */
+function restartToUpdate(): void {
+  if (!updater) return;
+  const waiting = updater;
+  waiting.reopen = true;
+  app.quit();
+  // A page with changes not yet stored keeps its window open; a later quit by hand does not reopen the app.
+  setTimeout(() => (waiting.reopen = false), QUIT_TIMEOUT_MS + 5000);
 }
 
 /** Saves the port used while 8422 is taken, so the next start tries it first. */
@@ -132,6 +183,7 @@ function registerIpc(): void {
     settingsFile,
     hasAppFor: (address) => app.getApplicationNameForProtocol(address) !== '',
     openExternal: (address) => shell.openExternal(address),
+    update: { readyVersion: () => updater?.readyVersion ?? null, restart: restartToUpdate },
     server: {
       access: () => server.access(),
       state: () => server.state(),

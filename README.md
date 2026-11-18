@@ -50,7 +50,10 @@ or `pnpm start`, which serves every device on your network.
 
 ### Desktop app
 
-There are no downloads yet; build it from a checkout (Node 22 and pnpm):
+For a Mac with Apple silicon, the
+[latest build](https://github.com/trapp01/Corkboard/releases/tag/latest) is a
+download, and it updates itself from then on. Or build it from a checkout
+(Node 22 and pnpm):
 
 ```sh
 git clone https://github.com/trapp01/Corkboard.git && cd Corkboard

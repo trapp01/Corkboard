@@ -34,6 +34,16 @@ export interface ShellBridge {
    */
   openLooseleafPage(appAddress: string, webAddress: string | null): Promise<boolean>;
 
+  /**
+   * Calls the listener with the version of an update that is downloaded and
+   * replaces this app when it quits: once for one already waiting, and again
+   * for each later one. Returns unsubscribe.
+   */
+  onUpdateReady(listener: (version: string) => void): () => void;
+
+  /** Quits the app, installs the waiting update and reopens the app. Does nothing when no update is waiting. */
+  restartToUpdate(): Promise<void>;
+
   /** Calls the listener whenever `serverState` would answer differently. Returns unsubscribe. */
   onServerState(listener: (state: AppServerState) => void): () => void;
 
