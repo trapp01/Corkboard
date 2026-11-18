@@ -107,15 +107,15 @@ describe('workspace', () => {
 });
 
 describe('cards', () => {
-  it('numbers cards from 1 and places them at the top, the bottom or a position', () => {
+  it('numbers cards from 1 and places them at the top unless given the bottom or a position', () => {
     const doc = newBoard();
     const by = 'Sam';
     const a = createCard(doc, { title: 'A', by });
     const b = createCard(doc, { title: 'B', by });
-    createCard(doc, { title: 'C', place: 'top', by });
+    createCard(doc, { title: 'C', place: 'bottom', by });
     createCard(doc, { title: 'D', place: 1, by });
     expect([a.number, b.number]).toEqual([1, 2]);
-    expect(titles(doc, 'Backlog')).toEqual(['C', 'D', 'A', 'B']);
+    expect(titles(doc, 'Backlog')).toEqual(['B', 'D', 'A', 'C']);
   });
 
   it('moves a card between statuses and records the move, but not a reorder', () => {
@@ -138,7 +138,7 @@ describe('cards', () => {
     archiveCard(doc, a.id, 'Sam');
     expect(titles(doc, 'Backlog')).toEqual(['B']);
     restoreCard(doc, a.id, 'Sam');
-    expect(titles(doc, 'Backlog')).toEqual(['A', 'B']);
+    expect(titles(doc, 'Backlog')).toEqual(['B', 'A']);
     archiveStatus(doc, statusId(doc, 'Backlog'));
     const board = readBoard(doc);
     expect(board.statuses.map((status) => status.name)).not.toContain('Backlog');
@@ -326,7 +326,7 @@ describe('search and rendering', () => {
     const text = renderCard(entry, board, card, { baseUrl: 'http://board', linkedText: new Map([[looseleafTarget('pg1'), 'Out of scope: Android']]) });
     expect(text).toContain('# MAIN-1 Login loop on iOS');
     expect(text).toContain('- Status: Backlog (todo)');
-    expect(text).toContain('- Position: 1 of 2 in Backlog');
+    expect(text).toContain('- Position: 2 of 2 in Backlog');
     expect(text).toContain('- Address: http://board/c/MAIN-1');
     expect(text).toContain('Token refresh fails');
     expect(text).toContain(`- [ ] Reproduce (item ${card.checklist[0]!.id})`);

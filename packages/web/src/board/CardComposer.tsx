@@ -1,6 +1,6 @@
 /**
- * The inline "Add a card" composer at the bottom of a status. Enter adds the
- * card and keeps the composer open for the next; Escape, or leaving it empty,
+ * The inline "Add a card" composer at the top of a status. Enter adds the
+ * card above the others and keeps the composer open for the next; Escape, or leaving it empty,
  * closes it.
  */
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
@@ -10,7 +10,8 @@ import { IconButton } from '../app/controls.js';
 import { useServices } from '../app/services.js';
 import { useCurrentBoard } from './board-context.js';
 
-export function CardComposer({ statusId, onClose }: { statusId: string; onClose: () => void }) {
+/** `onAdded` runs after each card is added, so the status can show its top, where the card went. */
+export function CardComposer({ statusId, onAdded, onClose }: { statusId: string; onAdded: () => void; onClose: () => void }) {
   const { actor } = useServices();
   const { doc } = useCurrentBoard();
   const [title, setTitle] = useState('');
@@ -23,9 +24,9 @@ export function CardComposer({ statusId, onClose }: { statusId: string; onClose:
 
   const add = () => {
     if (title.trim() === '') return;
-    createCard(doc, { title, statusId, place: 'bottom', by: actor.get() });
+    createCard(doc, { title, statusId, by: actor.get() });
     setTitle('');
-    requestAnimationFrame(() => field.current?.scrollIntoView({ block: 'nearest' }));
+    onAdded();
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {

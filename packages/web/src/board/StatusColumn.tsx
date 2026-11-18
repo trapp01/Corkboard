@@ -1,7 +1,7 @@
 /**
  * One status as a column: a header (drag handle, name to rename in place,
  * card count, kind marker, menu), its cards scrolling inside, and "Add a
- * card" at the bottom. The column is only as tall as its content.
+ * card" under it. The column is only as tall as its content.
  */
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useDroppable } from '@dnd-kit/core';
@@ -133,6 +133,14 @@ export function StatusColumn({
           ]}
         />
       )}
+      {composerOpen ? (
+        <CardComposer statusId={status.id} onAdded={() => body.node.current?.scrollTo({ top: 0 })} onClose={() => patchUi(ui, { composer: null })} />
+      ) : (
+        <button type="button" className="add-card-button" onClick={() => patchUi(ui, { composer: status.id })}>
+          <Plus size={16} aria-hidden="true" />
+          Add a card
+        </button>
+      )}
       <div ref={body.setNodeRef} className="status-cards">
         <SortableContext items={cards.map((card) => `card:${card.id}`)} strategy={verticalListSortingStrategy}>
           <ol className="card-list">
@@ -151,14 +159,6 @@ export function StatusColumn({
           </ol>
         </SortableContext>
       </div>
-      {composerOpen ? (
-        <CardComposer statusId={status.id} onClose={() => patchUi(ui, { composer: null })} />
-      ) : (
-        <button type="button" className="add-card-button" onClick={() => patchUi(ui, { composer: status.id })}>
-          <Plus size={16} aria-hidden="true" />
-          Add a card
-        </button>
-      )}
     </section>
   );
 }

@@ -115,13 +115,13 @@ describe('the MCP endpoint', () => {
     const server = await serverWithBoard();
     for (const title of ['A', 'B', 'C']) await call(server, 'create_card', { title });
     await call(server, 'create_card', { title: 'First', place: 'top' });
-    await call(server, 'move_card', { card: 'MAIN-3', status: 'Backlog', position: 2 });
+    await call(server, 'move_card', { card: 'MAIN-1', status: 'Backlog', position: 2 });
     const titles = async () => {
       const entry = (await server.current.boards.list())[0]!;
       const board = readBoard(await server.storedDoc(boardDocId(entry.id)));
       return cardsInStatus(board, board.statuses[0]!.id).map((card) => card.title);
     };
-    expect(await titles()).toEqual(['First', 'C', 'A', 'B']);
+    expect(await titles()).toEqual(['First', 'A', 'C', 'B']);
     expect((await call(server, 'archive_card', { card: 'MAIN-1' })).text).toBe('Archived MAIN-1 "A".\n');
     expect(await titles()).toEqual(['First', 'C', 'B']);
     const refused = await call(server, 'move_card', { card: 'MAIN-1', status: 'Backlog', place: 'top' });

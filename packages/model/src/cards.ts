@@ -16,6 +16,7 @@ export interface NewCard {
   title: string;
   /** The board's first status when left out. */
   statusId?: string;
+  /** The top of the status when left out. */
   place?: CardPlace;
   description?: string;
   labelIds?: string[];
@@ -117,7 +118,7 @@ export function createCard(doc: Y.Doc, input: NewCard): Card {
     card.set('number', nextCardNumber(doc));
     card.set('title', input.title.trim() || 'Untitled');
     card.set('status', status.id);
-    card.set('order', orderAt(siblings, placeIndex(input.place, siblings.length)));
+    card.set('order', orderAt(siblings, placeIndex(input.place ?? 'top', siblings.length)));
     const description = new Y.Text();
     card.set('description', description);
     if (input.description) description.insert(0, input.description);

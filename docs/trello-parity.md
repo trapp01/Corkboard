@@ -16,7 +16,7 @@ is in the notes where it differs.
 | Lists side by side, scrolling sideways | built | A list is a **status**. |
 | Add, rename, reorder (drag), archive a list | built | |
 | Cards stacked in a list, each list scrolling on its own | built | |
-| Add a card at the bottom of a list, Enter to add the next | built | |
+| Add a card at the bottom of a list, Enter to add the next | built | At the top of the status instead: the composer sits under the status header and a new card goes above the others. |
 | Drag a card within a list and between lists | built | Pointer, touch and keyboard. |
 | Card front: labels, title, badges for due date, description, checklist, comments, attachments | built | Labels show their names. Also shows the card ref and a links badge. |
 | Card covers (image or colour) | planned | |

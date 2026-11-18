@@ -78,7 +78,7 @@ export const WRITE_TOOLS: readonly McpTool[] = [
     description:
       'Adds a card to a board and returns its ref. Write the title as the task in a few words and the description so ' +
       'someone with no other context could pick it up: what is wanted, why, and how to tell it is finished. The card ' +
-      'goes to the bottom of the board\'s first status unless a status or place is given. Labels must exist on the board.',
+      'goes to the top of the board\'s first status unless a status or place is given. Labels must exist on the board.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -86,7 +86,7 @@ export const WRITE_TOOLS: readonly McpTool[] = [
         title: { type: 'string', description: 'The task in a few words.' },
         description: { type: 'string', description: 'Markdown.' },
         status: { type: 'string', description: 'A status name, or a kind (todo, doing, done) for the first status of that kind.' },
-        place: { type: 'string', description: 'Where in the status the card goes; bottom when left out.', enum: ['top', 'bottom'] },
+        place: { type: 'string', description: 'Where in the status the card goes; top when left out.', enum: ['top', 'bottom'] },
         labels: { type: 'array', description: 'Names of labels to put on the card.', items: { type: 'string' } },
         due: { type: 'string', description: 'The due day as YYYY-MM-DD.' },
         checklist: { type: 'array', description: 'Checklist items, in order: the steps of the task.', items: { type: 'string' } },
@@ -125,7 +125,7 @@ export const WRITE_TOOLS: readonly McpTool[] = [
         const created = createCard(doc, {
           title,
           statusId: target.id,
-          place: (args.place as 'top' | 'bottom' | undefined) ?? 'bottom',
+          place: args.place as 'top' | 'bottom' | undefined,
           description: args.description as string | undefined,
           labelIds: texts(args.labels).map((name) => resolveLabel(board, name).id),
           due,
