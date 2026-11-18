@@ -26,15 +26,18 @@ has to be configured for an agent to behave:
    person gave, such as `WEB-12`) and read it in full with `get_card`. When no
    card exists, make one with a description someone with no other context
    could pick up. Then move it to a status of kind `doing`.
-2. While working, tick checklist items as they are finished, comment when
+2. When the person is planning work rather than starting it, make the card
+   then, in a `todo` status, with what is wanted, why, and what was decided.
+   Notes too long for the card go on a Looseleaf page linked from it.
+3. While working, tick checklist items as they are finished, comment when
    there is a finding, a decision or a blocker, and link branches and pull
    requests.
-3. When stopping, comment with what was done, what is left and how to check
+4. When stopping, comment with what was done, what is left and how to check
    it, and move the card to a `done` status when it is finished.
-4. Something ruled out of scope or wanted later becomes its own card in a
+5. Something ruled out of scope or wanted later becomes its own card in a
    `todo` status.
-5. Change only the cards the task is about, and archive only when asked.
-6. A subagent doing one piece of another agent's task reads cards when they
+6. Change only the cards the task is about, and archive only when asked.
+7. A subagent doing one piece of another agent's task reads cards when they
    help and changes none; the agent that handed out the piece owns the card.
 
 ## Making it a habit in a project

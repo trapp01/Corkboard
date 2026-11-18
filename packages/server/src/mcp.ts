@@ -19,12 +19,13 @@ export const MCP_MAX_BODY_BYTES = 256 * 1024;
 const INSTRUCTIONS = [
   "Corkboard is the user's kanban board: the one place that shows what is being worked on, by them and by AI agents. Keep it true as you work.",
   'Before starting a task: find its card with search_cards (the user may give a ref such as WEB-12). When a card exists, read it in full with get_card before doing anything, including its checklist, comments and linked notes. When none exists, add one with create_card, with a description someone with no other context could pick up. Then move_card it to a status of kind doing.',
+  'When the user is planning work rather than starting it: add the card then, without being asked, in a todo status, with the context from the conversation in its description: what is wanted, why, and what was decided. Search first so a plan for an existing card updates that card instead.',
   'While working: tick checklist items with update_checklist as each is finished, and add_comment when there is something the next reader needs, such as a finding, a decision, or what blocks the task. Link branches, pull requests and issues with add_link.',
   'When you stop: add_comment saying what was done, what is left and how to check it. Move the card to a done status when it is finished; otherwise leave it where it shows the truth.',
   'Something the user rules out of scope or wants later becomes its own card in a todo status, not a silent omission.',
   'Change only the cards your task is about. Archive a card only when the user asks.',
   'When you are a subagent doing one piece of another agent\'s task, leave the board to the agent that gave you the piece: read cards if they help, and change none.',
-  "Statuses are the board's columns and each has a kind (todo, doing, done) that holds whatever the status is called. Within a status, a card higher up matters more. Labels say what a card is about, such as the app it touches. A card can link to a page in Looseleaf, the user's notebook, as looseleaf:<page id>.",
+  "Statuses are the board's columns and each has a kind (todo, doing, done) that holds whatever the status is called. Within a status, a card higher up matters more. Labels say what a card is about, such as the app it touches. A card can link to a page in Looseleaf, the user's notebook, as looseleaf:<page id>. The card holds the task and its state; notes too long for it, such as a plan or what an investigation found, go on a Looseleaf page linked from the card with add_link.",
 ].join('\n\n');
 
 const PARSE_ERROR = -32700;
