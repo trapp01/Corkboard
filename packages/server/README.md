@@ -32,6 +32,7 @@ The bundle needs only Node 22; copy `dist/server.js` anywhere and run it.
 | `CORKBOARD_SNAPSHOT_KEEP` | `14` | Daily snapshots to keep. |
 | `CORKBOARD_UPSTREAM_URL`, `CORKBOARD_UPSTREAM_TOKEN` | unset | Another Corkboard server to keep in step with (see Upstream). Set both or neither. |
 | `CORKBOARD_LOOSELEAF_URL`, `CORKBOARD_LOOSELEAF_TOKEN` | unset | A Looseleaf server to read linked pages from (see Looseleaf). Set both or neither. |
+| `CORKBOARD_LOOSELEAF_LINK_URL` | `CORKBOARD_LOOSELEAF_URL` | The address a linked page opens at in a browser. Set it when this server reaches Looseleaf at an address a browser cannot use, such as a compose service name. |
 
 The token keeps other devices on a private network (such as a tailnet) out.
 It is not a substitute for TLS on a public network; put the server behind

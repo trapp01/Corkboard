@@ -18,7 +18,9 @@ import {
   findBoard,
   formatCardRef,
   listBoards,
+  looseleafAppAddress,
   looseleafTarget,
+  looseleafWebAddress,
   moveCard,
   moveStatus,
   parseCardRef,
@@ -272,6 +274,12 @@ describe('text forms', () => {
     expect(parseLinkTarget('looseleaf:GjCU_n-8w')).toEqual({ kind: 'looseleaf', pageId: 'GjCU_n-8w' });
     expect(parseLinkTarget('https://example.com/pr/4')).toEqual({ kind: 'url', url: 'https://example.com/pr/4' });
     expect(parseLinkTarget('javascript:alert(1)')).toBeNull();
+  });
+
+  it('builds the two addresses Looseleaf opens a page at', () => {
+    expect(looseleafWebAddress('http://nas:8421', 'GjCU_n-8w')).toBe('http://nas:8421/#page=GjCU_n-8w');
+    expect(looseleafWebAddress('http://nas:8421//', 'GjCU_n-8w')).toBe('http://nas:8421/#page=GjCU_n-8w');
+    expect(looseleafAppAddress('GjCU_n-8w')).toBe('looseleaf://page/GjCU_n-8w');
   });
 });
 

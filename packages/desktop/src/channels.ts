@@ -8,6 +8,7 @@ export const CHANNELS = {
   serverState: 'corkboard:server-state',
   setUpstream: 'corkboard:set-upstream',
   setLooseleaf: 'corkboard:set-looseleaf',
+  openLooseleafPage: 'corkboard:open-looseleaf-page',
   serverStateChanged: 'corkboard:server-state-changed',
   menuCommand: 'corkboard:menu-command',
 } as const;

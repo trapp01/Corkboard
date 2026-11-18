@@ -38,6 +38,16 @@ export function looseleafTarget(pageId: string): string {
   return `${LOOSELEAF_PREFIX}${pageId}`;
 }
 
+/** The address Looseleaf's web client opens a page at, given the address that web client is served from. */
+export function looseleafWebAddress(serverUrl: string, pageId: string): string {
+  return `${serverUrl.replace(/\/+$/, '')}/#page=${pageId}`;
+}
+
+/** The address the Looseleaf desktop app opens a page at. */
+export function looseleafAppAddress(pageId: string): string {
+  return `looseleaf://page/${pageId}`;
+}
+
 export type LinkTarget = { kind: 'looseleaf'; pageId: string } | { kind: 'url'; url: string };
 
 /** What a link target points at, or null when it is neither a Looseleaf page nor an http(s) URL. */

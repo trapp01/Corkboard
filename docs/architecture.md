@@ -212,6 +212,17 @@ set, `looseleaf.ts` reads such a page as Markdown from that Looseleaf server's
 own MCP endpoint. `get_card` includes the text under the link, and the web
 client fetches it from `GET /api/looseleaf/pages/<pageId>` to show on the card.
 Looseleaf being unreachable is an ordinary "no text", never a failed request.
+
+The link's title opens the page in Looseleaf. Looseleaf gives every page two
+addresses, built in `packages/model/src/refs.ts`: `<server>/#page=<pageId>`
+for its web client and `looseleaf://page/<pageId>` for its desktop app. The
+route above answers with the web address beside the Markdown, made from
+`CORKBOARD_LOOSELEAF_LINK_URL` when that is set and `CORKBOARD_LOOSELEAF_URL`
+otherwise, since a server in a compose file reaches Looseleaf by a name no
+browser can use. In a browser the title is a link to that address. In the
+desktop app the bridge's `openLooseleafPage` opens the Looseleaf desktop app
+when the operating system has a program for `looseleaf:` addresses, and the
+web address when it has not.
 Corkboard only reads from Looseleaf.
 
 ## Upstream

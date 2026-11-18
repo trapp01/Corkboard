@@ -30,6 +30,7 @@ const bridge: ShellBridge = {
   serverState: () => ipcRenderer.invoke(CHANNELS.serverState),
   setUpstream: (link) => ipcRenderer.invoke(CHANNELS.setUpstream, link),
   setLooseleaf: (link) => ipcRenderer.invoke(CHANNELS.setLooseleaf, link),
+  openLooseleafPage: (appAddress, webAddress) => ipcRenderer.invoke(CHANNELS.openLooseleafPage, appAddress, webAddress),
   onServerState: (listener) => listen<AppServerState>(CHANNELS.serverStateChanged, listener),
   onMenuCommand: (listener) => listen<MenuCommand>(CHANNELS.menuCommand, listener),
 };

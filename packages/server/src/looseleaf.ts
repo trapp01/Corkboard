@@ -4,10 +4,14 @@
  * as Markdown. Looseleaf being away, or the page being gone, is an ordinary
  * answer of null, never a failure of the caller's request.
  */
+import { looseleafWebAddress } from '@corkboard/model';
+
 export interface LooseleafAccess {
   /** The Looseleaf server's address, e.g. `http://127.0.0.1:8421`. */
   url: string;
   token: string;
+  /** The address people open Looseleaf's web client at, when this server reaches Looseleaf at a different one (a compose service name, say). */
+  linkUrl?: string;
 }
 
 /** A page that is not answered within this time is treated as unavailable. */
@@ -23,6 +27,11 @@ export class Looseleaf {
     private readonly fetch: Fetch = globalThis.fetch,
   ) {
     this.endpoint = `${access.url.replace(/\/+$/, '')}/mcp`;
+  }
+
+  /** The address the page opens at in Looseleaf's web client. */
+  pageAddress(pageId: string): string {
+    return looseleafWebAddress(this.access.linkUrl || this.access.url, pageId);
   }
 
   /** The page as Markdown, or null when Looseleaf cannot be reached or has no such page. */

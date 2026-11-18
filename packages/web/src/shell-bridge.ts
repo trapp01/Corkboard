@@ -27,6 +27,13 @@ export interface ShellBridge {
   /** Saves the Looseleaf server linked pages are read from, or removes it when given null, and restarts the app's server. */
   setLooseleaf(link: ServerLink | null): Promise<AppServerState>;
 
+  /**
+   * Opens a linked Looseleaf page: at `appAddress` in the Looseleaf desktop
+   * app when this computer has it, else at `webAddress` in the browser.
+   * Resolves false when there is neither.
+   */
+  openLooseleafPage(appAddress: string, webAddress: string | null): Promise<boolean>;
+
   /** Calls the listener whenever `serverState` would answer differently. Returns unsubscribe. */
   onServerState(listener: (state: AppServerState) => void): () => void;
 

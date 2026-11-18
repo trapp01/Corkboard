@@ -23,7 +23,15 @@ function setup() {
       applied = settings;
     }),
   } satisfies ServerHost;
-  return { handlers: createHandlers({ server, settingsFile }), server, settingsFile };
+  const opened: string[] = [];
+  const installed = { looseleaf: false };
+  const handlers = createHandlers({
+    server,
+    settingsFile,
+    hasAppFor: (address) => installed.looseleaf && address.startsWith('looseleaf:'),
+    openExternal: async (address) => void opened.push(address),
+  });
+  return { handlers, server, settingsFile, opened, installed };
 }
 
 describe('bridge handlers', () => {
@@ -70,6 +78,28 @@ describe('bridge handlers', () => {
     await expect(handlers[CHANNELS.setLooseleaf]([{ url: 'http://ll', token: 7 }])).rejects.toThrow(/link.token/);
     expect(server.apply).not.toHaveBeenCalled();
     expect(loadSettings(settingsFile).upstream).toBeNull();
+  });
+
+  it('open a Looseleaf page in its desktop app when this computer has it, else in the browser', async () => {
+    const { handlers, opened, installed } = setup();
+    const open = handlers[CHANNELS.openLooseleafPage];
+    expect(await open(['looseleaf://page/pg1', 'http://nas:8421/#page=pg1'])).toBe(true);
+    expect(await open(['looseleaf://page/pg1', null])).toBe(false);
+    installed.looseleaf = true;
+    expect(await open(['looseleaf://page/pg1', 'http://nas:8421/#page=pg1'])).toBe(true);
+    expect(await open(['looseleaf://page/pg1', null])).toBe(true);
+    expect(opened).toEqual(['http://nas:8421/#page=pg1', 'looseleaf://page/pg1', 'looseleaf://page/pg1']);
+  });
+
+  it('refuse to open anything but a Looseleaf page address and an http(s) address', async () => {
+    const { handlers, opened, installed } = setup();
+    installed.looseleaf = true;
+    const open = handlers[CHANNELS.openLooseleafPage];
+    await expect(open(['file:///etc/passwd', null])).rejects.toThrow(/looseleaf:\/\/page/);
+    await expect(open(['looseleaf://page/a/../b', null])).rejects.toThrow(/looseleaf:\/\/page/);
+    await expect(open(['looseleaf://page/pg1', 'file:///etc/passwd'])).rejects.toThrow(/http\(s\)/);
+    await expect(open(['looseleaf://page/pg1'])).rejects.toThrow(/2 argument/);
+    expect(opened).toEqual([]);
   });
 });
 

@@ -1,14 +1,16 @@
 /**
  * The card's links: web addresses open in a new tab; a `looseleaf:<pageId>`
- * link shows as a Looseleaf note whose text can be expanded under it when the
- * server can read it from Looseleaf. Adding a link takes a target and a title.
+ * link shows as a Looseleaf note that opens the page in Looseleaf, and whose
+ * text can be expanded under it when the server can read it from Looseleaf.
+ * Adding a link takes a target and a title.
  */
 import { useEffect, useState, type FormEvent } from 'react';
 import { ChevronDown, ChevronRight, ExternalLink, Link2, NotebookText, Trash2 } from 'lucide-react';
-import { addLink, parseLinkTarget, removeLink, type Card, type CardLink } from '@corkboard/model';
+import { addLink, looseleafAppAddress, parseLinkTarget, removeLink, type Card, type CardLink } from '@corkboard/model';
 import { IconButton } from '../app/controls.js';
 import { useServices } from '../app/services.js';
 import { useCurrentBoard } from '../board/board-context.js';
+import { shell } from '../shell-bridge.js';
 import { Markdown } from './Markdown.js';
 
 export function CardLinks({ card }: { card: Card }) {
@@ -133,15 +135,40 @@ function hostOf(url: string): string {
   }
 }
 
-/** A Looseleaf page: its title, and its text under a disclosure once the server has returned it. Nothing extra shows when it cannot. */
+/**
+ * A Looseleaf page: its title, which opens the page in Looseleaf, and its
+ * text under a disclosure once the server has returned it. In the desktop app
+ * the title opens the Looseleaf desktop app when this computer has it, else
+ * the browser. In a browser the title is a link only once the server has
+ * said where its Looseleaf is.
+ */
 function LooseleafLink({ pageId, title }: { pageId: string; title: string }) {
-  const markdown = useLooseleafPage(pageId);
+  const page = useLooseleafPage(pageId);
+  const markdown = page?.markdown ?? null;
+  const address = page?.address ?? null;
   const [open, setOpen] = useState(false);
+  const bridge = shell();
+  const label = <span className="link-title">{title}</span>;
   return (
     <div className="looseleaf-link">
       <div className="link-target">
         <NotebookText size={15} aria-hidden="true" />
-        <span className="link-title">{title}</span>
+        {bridge ? (
+          <button
+            type="button"
+            className="link-open"
+            title="Open in Looseleaf"
+            onClick={() => void bridge.openLooseleafPage(looseleafAppAddress(pageId), address).catch((error: unknown) => console.error(error))}
+          >
+            {label}
+          </button>
+        ) : address !== null ? (
+          <a className="link-open" href={address} target="_blank" rel="noopener noreferrer" title="Open in Looseleaf">
+            {label}
+          </a>
+        ) : (
+          label
+        )}
         <span className="link-host">Looseleaf note</span>
         {markdown !== null && (
           <button type="button" className="button subtle" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
@@ -155,10 +182,16 @@ function LooseleafLink({ pageId, title }: { pageId: string; title: string }) {
   );
 }
 
-/** The page's Markdown from the server's Looseleaf route, or null while loading and whenever the server has none to give. */
-function useLooseleafPage(pageId: string): string | null {
+interface LooseleafPage {
+  markdown: string;
+  /** Where the page opens in Looseleaf's web client; null from a server that does not say. */
+  address: string | null;
+}
+
+/** The page from the server's Looseleaf route, or null while loading and whenever the server has none to give. */
+function useLooseleafPage(pageId: string): LooseleafPage | null {
   const { client } = useServices();
-  const [markdown, setMarkdown] = useState<string | null>(null);
+  const [page, setPage] = useState<LooseleafPage | null>(null);
   useEffect(() => {
     let cancelled = false;
     const access = client.server;
@@ -167,8 +200,10 @@ function useLooseleafPage(pageId: string): string | null {
       try {
         const response = await fetch(`${access.address}/api/looseleaf/pages/${encodeURIComponent(pageId)}`, { headers: { Authorization: `Bearer ${access.token}` } });
         if (!response.ok) return;
-        const body = (await response.json()) as { markdown?: unknown };
-        if (!cancelled && typeof body.markdown === 'string') setMarkdown(body.markdown);
+        const body = (await response.json()) as { markdown?: unknown; address?: unknown };
+        if (cancelled || typeof body.markdown !== 'string') return;
+        const address = typeof body.address === 'string' && /^https?:\/\//i.test(body.address) ? body.address : null;
+        setPage({ markdown: body.markdown, address });
       } catch {
         // Offline, or no Looseleaf behind this server: the link shows without its text.
       }
@@ -177,5 +212,5 @@ function useLooseleafPage(pageId: string): string | null {
       cancelled = true;
     };
   }, [pageId, client]);
-  return markdown;
+  return page;
 }

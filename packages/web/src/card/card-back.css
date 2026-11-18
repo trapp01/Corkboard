@@ -443,6 +443,22 @@ a.link-target:hover {
   min-width: 0;
 }
 
+/* The title of a Looseleaf note, as the link or button that opens the page. */
+.link-open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-open:hover .link-title {
+  text-decoration: underline;
+}
+
 .looseleaf-link .button.subtle {
   margin-left: auto;
 }

@@ -28,6 +28,13 @@ function accessFromEnv(urlName: string, tokenName: string): { url: string; token
   return { url, token };
 }
 
+/** The Looseleaf server to read linked pages from, with the address its pages open at when that is set apart. */
+function looseleafFromEnv(): { url: string; token: string; linkUrl?: string } | null {
+  const access = accessFromEnv('CORKBOARD_LOOSELEAF_URL', 'CORKBOARD_LOOSELEAF_TOKEN');
+  const linkUrl = process.env.CORKBOARD_LOOSELEAF_LINK_URL?.trim() ?? '';
+  return access !== null && linkUrl !== '' ? { ...access, linkUrl } : access;
+}
+
 /**
  * The built web client's folder: CORKBOARD_WEB_DIR when set, else the one
  * that sits beside this file in the image or in a checkout that has run the
@@ -56,7 +63,7 @@ async function main(): Promise<void> {
     maxBlobBytes: numberFromEnv('CORKBOARD_MAX_BLOB_BYTES', DEFAULT_MAX_BLOB_BYTES, { min: 1 }),
     snapshotKeep: numberFromEnv('CORKBOARD_SNAPSHOT_KEEP', DEFAULT_SNAPSHOT_KEEP, { min: 1 }),
     upstream: accessFromEnv('CORKBOARD_UPSTREAM_URL', 'CORKBOARD_UPSTREAM_TOKEN'),
-    looseleaf: accessFromEnv('CORKBOARD_LOOSELEAF_URL', 'CORKBOARD_LOOSELEAF_TOKEN'),
+    looseleaf: looseleafFromEnv(),
   });
   const on = process.env.CORKBOARD_HOST?.trim() ? `${process.env.CORKBOARD_HOST.trim()} port` : 'port';
   console.log(`Corkboard server ${SERVER_VERSION} listening on ${on} ${server.port}, data in ${dataDir}`);

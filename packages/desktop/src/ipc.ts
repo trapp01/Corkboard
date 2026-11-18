@@ -19,6 +19,10 @@ export interface HandlerDeps {
   server: ServerHost;
   /** The settings JSON file in user data. */
   settingsFile: string;
+  /** True when a program on this computer opens addresses of this address's scheme. */
+  hasAppFor(address: string): boolean;
+  /** Hands an address to the operating system to open. */
+  openExternal(address: string): Promise<void>;
 }
 
 export type Handler = (args: unknown[]) => Promise<unknown>;
@@ -88,6 +92,22 @@ export function createHandlers(deps: HandlerDeps): Record<InvokeChannel, Handler
     async [CHANNELS.setLooseleaf](args) {
       expectArgCount(args, 1, CHANNELS.setLooseleaf);
       return save({ looseleaf: expectLinkOrNull(args[0]) });
+    },
+
+    async [CHANNELS.openLooseleafPage](args) {
+      expectArgCount(args, 2, CHANNELS.openLooseleafPage);
+      const [appAddress, webAddress] = args;
+      // The page chooses what the operating system opens, so only a Looseleaf page address and an http(s) address pass.
+      if (typeof appAddress !== 'string' || !/^looseleaf:\/\/page\/[A-Za-z0-9_-]+$/.test(appAddress)) {
+        throw new TypeError('appAddress must be a looseleaf://page/<pageId> address');
+      }
+      if (webAddress !== null && (typeof webAddress !== 'string' || !/^https?:\/\/\S+$/i.test(webAddress))) {
+        throw new TypeError('webAddress must be an http(s) address or null');
+      }
+      const address = deps.hasAppFor(appAddress) ? appAddress : webAddress;
+      if (address === null) return false;
+      await deps.openExternal(address);
+      return true;
     },
   };
 }

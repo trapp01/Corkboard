@@ -130,6 +130,8 @@ function allowOnlyClipboardWrite(): void {
 function registerIpc(): void {
   const handlers = createHandlers({
     settingsFile,
+    hasAppFor: (address) => app.getApplicationNameForProtocol(address) !== '',
+    openExternal: (address) => shell.openExternal(address),
     server: {
       access: () => server.access(),
       state: () => server.state(),

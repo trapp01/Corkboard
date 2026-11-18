@@ -89,7 +89,8 @@ where each one stands.
 - When the Corkboard server is started with `CORKBOARD_LOOSELEAF_URL` and
   `CORKBOARD_LOOSELEAF_TOKEN`, `get_card` includes the text of each linked
   page, so an agent reading a card also reads the scope written in the
-  notebook. The web client shows the same text on the card.
+  notebook. The web client shows the same text on the card, and the link's
+  title opens the page in Looseleaf.
 - An agent connected to both servers can turn a scope into tasks: read the
   page in Looseleaf, create a card per task on the board, and link each card
   back to the page. It can also go the other way and write a note into

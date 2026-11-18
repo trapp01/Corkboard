@@ -16,6 +16,8 @@ services:
       # A Looseleaf server to read linked pages from. Leave both empty for none.
       CORKBOARD_LOOSELEAF_URL: ${CORKBOARD_LOOSELEAF_URL:-}
       CORKBOARD_LOOSELEAF_TOKEN: ${CORKBOARD_LOOSELEAF_TOKEN:-}
+      # The address a linked page opens at in a browser, when it is not the one above.
+      CORKBOARD_LOOSELEAF_LINK_URL: ${CORKBOARD_LOOSELEAF_LINK_URL:-}
     volumes:
       # A named volume. To keep the data next to this file instead, use ./data:/data and make
       # sure ./data is writable by uid 1000, the image's `node` user.

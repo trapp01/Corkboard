@@ -76,7 +76,7 @@ export {
   updateChecklistItem,
 } from './cards.js';
 export type { CardPlace, NewCard } from './cards.js';
-export { boardPath, cardPath, formatCardRef, looseleafTarget, parseCardRef, parseLinkTarget } from './refs.js';
+export { boardPath, cardPath, formatCardRef, looseleafAppAddress, looseleafTarget, looseleafWebAddress, parseCardRef, parseLinkTarget } from './refs.js';
 export type { LinkTarget } from './refs.js';
 export { searchCards } from './search.js';
 export type { CardFilter } from './search.js';

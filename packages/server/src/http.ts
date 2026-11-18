@@ -42,7 +42,7 @@ export interface HttpOptions {
 
 const NO_WEB_CLIENT = 'Corkboard server is running. This build has no web client; set CORKBOARD_WEB_DIR to a built one.\n';
 
-/** A linked Looseleaf page as Markdown: `GET /api/looseleaf/pages/<pageId>`. */
+/** A linked Looseleaf page as Markdown, with the address it opens at: `GET /api/looseleaf/pages/<pageId>`. */
 export const LOOSELEAF_PAGES_PATH = '/api/looseleaf/pages';
 
 /** Sent with the web client's HTML. connect-src is wide because the client may sync with another Corkboard server. */
@@ -185,7 +185,7 @@ async function handleLooseleafPage(options: HttpOptions, req: IncomingMessage, r
   const pageId = path.slice(LOOSELEAF_PAGES_PATH.length + 1);
   const markdown = /^[A-Za-z0-9_-]+$/.test(pageId) ? await options.looseleaf.readPage(pageId) : null;
   if (markdown === null) return sendJson(res, 404, { error: `Looseleaf has no page ${pageId}, or it cannot be reached` });
-  return sendJson(res, 200, { markdown });
+  return sendJson(res, 200, { markdown, address: options.looseleaf.pageAddress(pageId) });
 }
 
 function authorized(options: HttpOptions, req: IncomingMessage): boolean {

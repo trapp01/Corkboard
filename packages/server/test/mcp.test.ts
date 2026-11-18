@@ -294,7 +294,12 @@ describe('Looseleaf', () => {
 
     const headers = { Authorization: `Bearer ${TOKEN}` };
     const page = await fetch(`${server.url}/api/looseleaf/pages/pg1`, { headers });
-    expect(await page.json()).toEqual({ markdown: '# Scope\n\nOut of scope: Android.' });
+    expect(await page.json()).toEqual({ markdown: '# Scope\n\nOut of scope: Android.', address: `${notes.url}/#page=pg1` });
+
+    // A server that reaches Looseleaf at an address a browser cannot use hands out the one people open.
+    const composed = await serverWithBoard({ looseleaf: { url: notes.url, token: 'notes-token', linkUrl: 'http://nas:8421/' } });
+    const linked = await fetch(`${composed.url}/api/looseleaf/pages/pg1`, { headers });
+    expect(await linked.json()).toMatchObject({ address: 'http://nas:8421/#page=pg1' });
     expect((await fetch(`${server.url}/api/looseleaf/pages/gone`, { headers })).status).toBe(404);
     expect((await fetch(`${server.url}/api/looseleaf/pages/pg1`)).status).toBe(401);
     expect((await fetch(`${server.url}/api/looseleaf/pages/%E0`, { headers })).status).toBe(404);
